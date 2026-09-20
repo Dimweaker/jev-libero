@@ -1,0 +1,15 @@
+{
+  "success": false,
+  "decisions": 75,
+  "sim_steps": 600,
+  "api_calls": 127,
+  "intent_calls": 25,
+  "strategy_calls": 27,
+  "cost_usd": 0.005854127999999995,
+  "initial_state": 0,
+  "seed": 2,
+  "task_config_name": "microwave_close",
+  "final_task_value": 28.33431080953231,
+  "task_value_unit": "deg",
+  "error": "No primitive satisfies configured effect and feasibility contracts; stopping without a fallback action"
+}

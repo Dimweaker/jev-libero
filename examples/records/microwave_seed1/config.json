@@ -1,0 +1,152 @@
+{
+  "task": "close the microwave",
+  "initial_state": 0,
+  "seed": 1,
+  "max_decisions": 100,
+  "budget_usd": 0.1,
+  "candidate_controls": {
+    "x-40mm": {
+      "axis": 0,
+      "mm": -40,
+      "description": "Move gripper -40 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "x-10mm": {
+      "axis": 0,
+      "mm": -10,
+      "description": "Move gripper -10 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "x-3mm": {
+      "axis": 0,
+      "mm": -3,
+      "description": "Move gripper -3 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "x+3mm": {
+      "axis": 0,
+      "mm": 3,
+      "description": "Move gripper +3 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "x+10mm": {
+      "axis": 0,
+      "mm": 10,
+      "description": "Move gripper +10 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "x+40mm": {
+      "axis": 0,
+      "mm": 40,
+      "description": "Move gripper +40 millimeters along WORLD x; hold orientation and finger command."
+    },
+    "y-40mm": {
+      "axis": 1,
+      "mm": -40,
+      "description": "Move gripper -40 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "y-10mm": {
+      "axis": 1,
+      "mm": -10,
+      "description": "Move gripper -10 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "y-3mm": {
+      "axis": 1,
+      "mm": -3,
+      "description": "Move gripper -3 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "y+3mm": {
+      "axis": 1,
+      "mm": 3,
+      "description": "Move gripper +3 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "y+10mm": {
+      "axis": 1,
+      "mm": 10,
+      "description": "Move gripper +10 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "y+40mm": {
+      "axis": 1,
+      "mm": 40,
+      "description": "Move gripper +40 millimeters along WORLD y; hold orientation and finger command."
+    },
+    "z-40mm": {
+      "axis": 2,
+      "mm": -40,
+      "description": "Move gripper -40 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "z-10mm": {
+      "axis": 2,
+      "mm": -10,
+      "description": "Move gripper -10 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "z-3mm": {
+      "axis": 2,
+      "mm": -3,
+      "description": "Move gripper -3 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "z+3mm": {
+      "axis": 2,
+      "mm": 3,
+      "description": "Move gripper +3 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "z+10mm": {
+      "axis": 2,
+      "mm": 10,
+      "description": "Move gripper +10 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "z+40mm": {
+      "axis": 2,
+      "mm": 40,
+      "description": "Move gripper +40 millimeters along WORLD z; hold orientation and finger command."
+    },
+    "rotate_x-10deg": {
+      "rot_axis": 0,
+      "deg": -10,
+      "description": "Rotate gripper -10 degrees about WORLD x; hold position and finger command."
+    },
+    "rotate_x+10deg": {
+      "rot_axis": 0,
+      "deg": 10,
+      "description": "Rotate gripper +10 degrees about WORLD x; hold position and finger command."
+    },
+    "rotate_y-10deg": {
+      "rot_axis": 1,
+      "deg": -10,
+      "description": "Rotate gripper -10 degrees about WORLD y; hold position and finger command."
+    },
+    "rotate_y+10deg": {
+      "rot_axis": 1,
+      "deg": 10,
+      "description": "Rotate gripper +10 degrees about WORLD y; hold position and finger command."
+    },
+    "rotate_z-10deg": {
+      "rot_axis": 2,
+      "deg": -10,
+      "description": "Rotate gripper -10 degrees about WORLD z; hold position and finger command."
+    },
+    "rotate_z+10deg": {
+      "rot_axis": 2,
+      "deg": 10,
+      "description": "Rotate gripper +10 degrees about WORLD z; hold position and finger command."
+    },
+    "open": {
+      "description": "Open gripper fingers; hold position and orientation."
+    },
+    "close": {
+      "description": "Close gripper fingers; hold position and orientation."
+    },
+    "hold": {
+      "description": "Hold pose and current finger command."
+    }
+  },
+  "horizon_environment_steps": 8,
+  "collision_aware": true,
+  "two_step_reposition_witnesses": true,
+  "effect_thresholds": {
+    "progress": 0.001,
+    "approach_mm": 2.0
+  },
+  "task_config_file": "task_config.json",
+  "geometry_distance_backend": "FCL 0.7.0.11, collision primitives and mesh convex hulls, unsigned gap",
+  "controller": "same generic Cartesian feedback as original primitive trials",
+  "forward_model": "full MuJoCo data plus controller, gripper, observables, buffers and clock snapshots; same live primitive executor",
+  "hierarchy": "Jev chooses feasible intent, predicted contact/motion family, then primitive; code owns physical predictions and effect eligibility",
+  "known_successful_trajectory_used_at_runtime": false,
+  "automatic_skills": false
+}

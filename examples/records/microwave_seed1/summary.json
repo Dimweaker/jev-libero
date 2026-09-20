@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "decisions": 14,
+  "sim_steps": 111,
+  "api_calls": 26,
+  "intent_calls": 6,
+  "strategy_calls": 6,
+  "cost_usd": 0.0012488699999999996,
+  "initial_state": 0,
+  "seed": 1,
+  "task_config_name": "microwave_close",
+  "final_task_value": 0.19010529723762037,
+  "task_value_unit": "deg",
+  "error": null
+}

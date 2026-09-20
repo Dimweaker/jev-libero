@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev-libero"
+version = "0.1.0"
+description = "Fine-grained Jev robot control with configurable goals and local physics previews"
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "DimWeaker"}]
+dependencies = ["numpy>=1.26,<2", "requests>=2.31,<3", "Pillow>=10,<13", "PyYAML>=6,<7"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.optional-dependencies]
+robot = [
+  "mujoco==3.5.0", "robosuite==1.4.1", "python-fcl==0.7.0.11",
+  "scipy>=1.10,<2", "torch==2.2.0", "gym==0.26.2", "bddl==3.6.0",
+  "easydict>=1.9,<2", "PyYAML>=6,<7", "matplotlib>=3.5,<4",
+  "opencv-python>=4.6,<4.12", "cloudpickle>=2,<4",
+  "h5py>=3.8,<4", "imageio>=2.31,<3", "tqdm>=4.65,<5",
+]
+dev = ["pytest>=8,<10", "ruff>=0.15,<0.16", "build>=1,<2"]
+media = ["imageio-ffmpeg>=0.6,<0.7"]
+
+[project.urls]
+Homepage = "https://github.com/Dimweaker/jev-libero"
+Issues = "https://github.com/Dimweaker/jev-libero/issues"
+
+[project.scripts]
+jev-libero = "jev_libero.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+jev_libero = ["tasks/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["simulation: requires the robot extra and a LIBERO checkout"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

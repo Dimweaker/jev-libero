@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "decisions": 20,
+  "sim_steps": 155,
+  "api_calls": 30,
+  "intent_calls": 5,
+  "strategy_calls": 5,
+  "cost_usd": 0.0014176260000000002,
+  "initial_state": 0,
+  "seed": 1,
+  "task_config_name": "top_drawer_close",
+  "final_task_value": -1.1571877936735215,
+  "task_value_unit": "mm",
+  "error": null
+}

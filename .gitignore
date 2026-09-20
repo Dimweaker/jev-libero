@@ -1,0 +1,27 @@
+# Local research history and unrelated work: kept on disk, not published.
+/exploration/
+/jev-town/
+/benchmark.py
+/results/
+/.pi/
+
+# Runs, credentials, dependencies, caches
+/runs/
+/.cache/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store

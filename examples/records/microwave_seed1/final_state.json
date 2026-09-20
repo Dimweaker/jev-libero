@@ -1,0 +1,51 @@
+{
+  "qpos_rad": -0.0033179633622789566,
+  "angle_open_degrees": 0.19010529723762037,
+  "eef_mm": [
+    -12.172621272485763,
+    199.76093396601576,
+    1093.1316637483924
+  ],
+  "eef_rotation_matrix": [
+    [
+      0.002478028994162533,
+      0.9985171091681468,
+      -0.054382369117103174
+    ],
+    [
+      0.9999965733756806,
+      -0.0025202688653806664,
+      -0.0007081537550403805
+    ],
+    [
+      -0.0008441618320409634,
+      -0.05438042794361737,
+      -0.99851993292446
+    ]
+  ],
+  "finger_gap_mm": 76.37489241320519,
+  "moving_contact": true,
+  "obstacle_contact": false,
+  "contact_modes": [
+    "fingerpad"
+  ],
+  "target_force_N": 1.48404203967344,
+  "obstacle_force_N": 0,
+  "distance_to_moving_geometry_mm": 0.9932460714510193,
+  "contacts": [
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "microwave_1_g17",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 1.48404203967344,
+      "position_mm": [
+        -3.4338873398880865,
+        245.2156774938492,
+        1104.2500403577496
+      ]
+    }
+  ],
+  "success": true
+}

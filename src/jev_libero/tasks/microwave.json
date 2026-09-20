@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "name": "microwave_close",
+  "binding": {
+    "suite": "libero_90",
+    "task": "KITCHEN_SCENE6_close_the_microwave",
+    "object": "microwave_1",
+    "joint_suffix": "microjoint",
+    "bodies": {},
+    "sites": {},
+    "success": "libero"
+  },
+  "contact": {
+    "min_normal_force_N": 1.0,
+    "allowed_other_geoms": [],
+    "parts": [
+      {
+        "contains": "pad",
+        "name": "fingerpad"
+      },
+      {
+        "contains": "finger",
+        "name": "finger"
+      }
+    ],
+    "default_part": "palm",
+    "reject_new_obstacles": true,
+    "require_obstacle_free_endpoint": true,
+    "release_priority": [
+      "blocked",
+      "all"
+    ]
+  },
+  "features": {
+    "qpos_rad": {
+      "ref": "raw.joint_position"
+    },
+    "angle_open_degrees": {
+      "mul": [
+        {
+          "ref": "raw.joint_position"
+        },
+        -57.29577951308232
+      ]
+    }
+  },
+  "predictions": {
+    "closing_degrees": {
+      "mul": [
+        {
+          "sub": [
+            {
+              "ref": "after.qpos_rad"
+            },
+            {
+              "ref": "before.qpos_rad"
+            }
+          ]
+        },
+        57.29577951308232
+      ]
+    }
+  },
+  "thresholds": {
+    "ordinary": {
+      "progress": 0.25,
+      "approach_mm": 2.0
+    },
+    "collision_aware": {
+      "progress": 0.001,
+      "approach_mm": 2.0
+    }
+  },
+  "contracts": {
+    "advance_target": {
+      "any": [
+        {
+          "ge": [
+            {
+              "ref": "p.closing_degrees"
+            },
+            {
+              "ref": "thresholds.progress"
+            }
+          ]
+        },
+        {
+          "ref": "after.success"
+        }
+      ]
+    },
+    "establish_contact": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.moving_contact"
+          }
+        },
+        {
+          "ref": "after.moving_contact"
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.closing_degrees"
+            },
+            {
+              "mul": [
+                {
+                  "ref": "thresholds.progress"
+                },
+                -1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "approach_target": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.moving_contact"
+          }
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.geometry_approach_mm"
+            },
+            {
+              "ref": "thresholds.approach_mm"
+            }
+          ]
+        },
+        {
+          "not": {
+            "ref": "after.obstacle_contact"
+          }
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.closing_degrees"
+            },
+            {
+              "mul": [
+                {
+                  "ref": "thresholds.progress"
+                },
+                -1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "release_contact": {
+      "ref": "released_required_contacts"
+    },
+    "reposition": {
+      "ref": "has_reposition_witness"
+    }
+  },
+  "policy": {
+    "intent_descriptions": {
+      "advance_target": "Advance the task through witnessed door closure. The primitive really changes the joint, not merely the hand position.",
+      "establish_contact": "Create actual moving-door contact that is currently absent. Being near a point is not completion.",
+      "approach_target": "Reduce actual gripper-to-moving-door surface separation without predicted obstacle contact. Useful before contact, not an already reached waypoint.",
+      "release_contact": "Remove the currently obstructing contact pairs (or current target contact when no obstacle pairs exist). This may temporarily open the door; inspect predicted closure.",
+      "reposition": "A first primitive with a verified safe second-primitive witness that produces net task/contact/approach progress. Only the first primitive executes; the next decision is recomputed."
+    },
+    "motor_instructions": "Choose one atomic input fulfilling the selected intent. For advance_target, prefer actual task completion, otherwise greater predicted closure without unnecessary obstacle force. For approach_target, prefer substantial predicted surface-gap reduction. For establish_contact, prefer useful contact with closure. For release_contact, release the obstruction with less loss of task progress. For reposition, compare the verified two-step net effects rather than demanding immediate progress from the first input. Do not invent or execute a sequence; only this input runs.",
+    "intent_instructions": "Choose the next physical objective from feasible effect contracts. Prefer task closure when available and avoid unnecessary release of productive contact. If contact is not yet possible, approaching is useful. These are simulator predictions, not Jev predictions.",
+    "strategy_instructions": "Choose the predicted contact mode and motion family for the selected intent. These are witnessed short primitive outcomes, not geometric waypoints or full-task skills. Compare task progress and unintended obstacle contact.",
+    "task_text": "close the microwave",
+    "review_interval": 8,
+    "review_when_available": [
+      "advance_target"
+    ],
+    "review_transitions": {
+      "approach_target": [
+        "establish_contact"
+      ]
+    },
+    "review_if_finish_elsewhere": true,
+    "prediction_scope": "Each primitive was simulated for up to 8 environment steps (0.4s). Reposition candidates additionally have a verified two-primitive witness. Only one selected primitive executes.",
+    "intent_state": {
+      "angle_open_degrees": {
+        "round": [
+          {
+            "ref": "before.angle_open_degrees"
+          },
+          2
+        ]
+      }
+    },
+    "strategy_state": {
+      "angle_open_degrees": {
+        "round": [
+          {
+            "ref": "before.angle_open_degrees"
+          },
+          2
+        ]
+      }
+    },
+    "motor_options": {
+      "predicted_task_complete": {
+        "ref": "after.success"
+      },
+      "predicted_closing_degrees": {
+        "round": [
+          {
+            "ref": "p.closing_degrees"
+          },
+          3
+        ]
+      },
+      "predicted_surface_gap_reduction_mm": {
+        "round": [
+          {
+            "ref": "p.geometry_approach_mm"
+          },
+          2
+        ]
+      },
+      "predicted_target_contact": {
+        "ref": "after.moving_contact"
+      },
+      "predicted_obstacle_peak_force_N": {
+        "round": [
+          {
+            "ref": "p.peak_obstacle_force_N"
+          },
+          1
+        ]
+      }
+    },
+    "feedback": {
+      "actual_closing_degrees": {
+        "round": [
+          {
+            "mul": [
+              {
+                "sub": [
+                  {
+                    "ref": "after.qpos_rad"
+                  },
+                  {
+                    "ref": "before.qpos_rad"
+                  }
+                ]
+              },
+              57.29577951308232
+            ]
+          },
+          3
+        ]
+      },
+      "moving_contact_after": {
+        "ref": "after.moving_contact"
+      },
+      "obstacle_contact_after": {
+        "ref": "after.obstacle_contact"
+      },
+      "success": {
+        "ref": "after.success"
+      }
+    },
+    "summary": {
+      "can_finish_task": {
+        "field": "after.success",
+        "reduce": "any"
+      },
+      "predicted_surface_gap_reduction_mm_range": {
+        "field": "geometry_approach_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "predicted_closing_degrees_range": {
+        "field": "closing_degrees",
+        "reduce": "range",
+        "digits": 3
+      },
+      "predicted_obstacle_force_N_range": {
+        "field": "peak_obstacle_force_N",
+        "reduce": "range",
+        "digits": 1
+      }
+    }
+  },
+  "search": {
+    "score": [
+      {
+        "ref": "after.success"
+      },
+      {
+        "ref": "effects.advance_target"
+      },
+      {
+        "ref": "p.closing_degrees"
+      },
+      {
+        "ref": "effects.establish_contact"
+      },
+      {
+        "ref": "p.geometry_approach_mm"
+      }
+    ],
+    "progress_field": "closing_degrees"
+  },
+  "display": {
+    "field": "angle_open_degrees",
+    "label": "open",
+    "unit": "deg",
+    "progress_field": "closing_degrees"
+  }
+}

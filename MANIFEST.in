@@ -1,0 +1,6 @@
+include README.zh-CN.md CONTRIBUTING.md THIRD_PARTY.md .env.example
+recursive-include tests *.py
+recursive-include tools *.py
+recursive-include docs *.md *.svg *.gif *.mp4
+recursive-include examples/records *.md *.json *.jsonl.gz *.npz
+global-exclude __pycache__ *.py[cod]

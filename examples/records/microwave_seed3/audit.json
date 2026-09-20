@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "decisions": 53,
+  "sim_steps": 417,
+  "api_calls": 128,
+  "intent_calls": 36,
+  "strategy_calls": 39,
+  "cost_usd": 0.004186560000000002,
+  "initial_state": 0,
+  "seed": 3,
+  "task_config_name": "microwave_close",
+  "final_task_value": 0.14065261777177623,
+  "task_value_unit": "deg",
+  "error": null,
+  "max_prediction_state_error": 0.0,
+  "two_step_searches": 4,
+  "advance_actions_with_progress_within_deadband_of_hold": 1,
+  "audit": "passed: configuration contracts, hierarchy, actions, states, fees and nonnegative geometry gap"
+}

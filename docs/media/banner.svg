@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="224" viewBox="0 0 960 224" role="img" aria-labelledby="title desc">
+<title id="title">Jev × LIBERO</title><desc id="desc">Fine-grained decisions. Physics-grounded robot control.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101e31"/><stop offset="1" stop-color="#182e36"/></linearGradient><linearGradient id="accent"><stop stop-color="#70e9bd"/><stop offset="1" stop-color="#7db8ff"/></linearGradient></defs>
+<rect width="960" height="224" rx="22" fill="url(#bg)"/>
+<path d="M35 187H925" stroke="#35505f" stroke-width="1"/>
+<text x="40" y="53" fill="#70e9bd" font-family="system-ui,sans-serif" font-size="13" font-weight="600" letter-spacing="3">OPEN SOURCE · RESEARCH PROTOTYPE</text>
+<text x="38" y="121" fill="#f0f6fc" font-family="system-ui,sans-serif" font-size="56" font-weight="750">Jev <tspan fill="#70e9bd">×</tspan> LIBERO</text>
+<text x="40" y="157" fill="#adbfce" font-family="system-ui,sans-serif" font-size="19">Fine-grained decisions. Physics-grounded control.</text>
+<g stroke="url(#accent)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M742 180V148L787 97L843 127L861 109"/><path d="M850 100L863 88L879 100" stroke-width="5"/></g>
+<g fill="#142833" stroke="#70e9bd" stroke-width="3"><circle cx="742" cy="148" r="10"/><circle cx="787" cy="97" r="10"/><circle cx="843" cy="127" r="8"/></g>
+<rect x="728" y="177" width="33" height="9" rx="3" fill="#86aab8"/>
+<rect x="855" y="147" width="40" height="39" rx="4" fill="#70e9bd" fill-opacity=".12" stroke="#70e9bd" stroke-width="2"/>
+<path d="M868 163l5 5 10-13" fill="none" stroke="#70e9bd" stroke-width="2"/>
+</svg>

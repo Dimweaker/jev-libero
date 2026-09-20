@@ -1,0 +1,11 @@
+{
+  "libero_revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+  "python": "3.10",
+  "robosuite": "1.4.1",
+  "mujoco": "3.5.0",
+  "numpy": "1.26.4",
+  "python-fcl": "0.7.0.11",
+  "model": "typesafe/jev-1.13",
+  "initial_state": 0,
+  "note": "Original research-run records, unchanged except lossless gzip. Model API calls are not replayed; recorded simulator controls can be replayed locally."
+}
