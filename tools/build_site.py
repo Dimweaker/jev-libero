@@ -22,7 +22,7 @@ EPISODES = (
         "Grasp and lower into the basket",
         "goal_distance_mm",
         1,
-        "LIBERO containment passed. The object is still held at the final frame; release and settling were not demonstrated. Cost is a TypeSafe token-price estimate.",
+        "40 decisions · 314 environment steps · TypeSafe API.",
     ),
 )
 

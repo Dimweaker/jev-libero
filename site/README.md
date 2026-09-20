@@ -16,7 +16,7 @@ Open `http://localhost:8080`. The page is static HTML/CSS/JavaScript; visitors d
 
 ## Data and timing
 
-`tools/build_site.py` exports three featured seed-1 recordings (microwave, drawer, and alphabet soup) from `examples/records/` and copies their MP4s. Grasp progress uses the recorded 20 Hz measurements rather than a joint-state column. Its visible outcome note distinguishes native containment from release and settling. The generated `_site/` folder contains the deployable website.
+`tools/build_site.py` exports three featured seed-1 recordings (microwave, drawer, and alphabet soup) from `examples/records/` and copies their MP4s. Grasp progress uses the recorded 20 Hz measurements rather than a joint-state column. Its caption summarizes the decision count, control steps, and API provider. The generated `_site/` folder contains the deployable website.
 
 - Each primitive's recorded step count defines its video interval, including the shorter final actions.
 - The 20 Hz progress curve comes from saved simulator states. Render frame zero follows the first control step, so video frame `i` corresponds to measured state `i + 1`.
