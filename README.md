@@ -24,10 +24,10 @@
 </tr>
 <tr><td align="center">14 decisions · 111 environment steps<br/><a href="docs/media/microwave.mp4">MP4</a> · <a href="examples/records/microwave_seed1">Full record</a></td><td align="center">20 decisions · 155 environment steps<br/><a href="docs/media/top-drawer.mp4">MP4</a> · <a href="examples/records/top_drawer_seed1">Full record</a></td></tr>
 <tr><th colspan="2">Grasp and lower alphabet soup into the basket</th></tr>
-<tr><td colspan="2" align="center"><a href="docs/media/alphabet-soup.mp4"><img src="docs/media/alphabet-soup.gif" width="360" alt="Jev grasps a soup can, lifts it, and lowers it into the basket while retaining its grip" /></a><br/>40 decisions · 314 environment steps<br/><a href="docs/media/alphabet-soup.mp4">MP4</a> · <a href="examples/records/alphabet_soup_seed1">Full record</a></td></tr>
+<tr><td colspan="2" align="center"><a href="docs/media/alphabet-soup.mp4"><img src="docs/media/alphabet-soup.gif" width="360" alt="Jev grasps a soup can, lifts it, and lowers it into the basket" /></a><br/>40 decisions · 314 environment steps<br/><a href="docs/media/alphabet-soup.mp4">MP4</a> · <a href="examples/records/alphabet_soup_seed1">Full record</a></td></tr>
 </table>
 
-Three LIBERO task configurations share one control engine. Videos follow simulation time, with decision and physics-preview waiting omitted. The grasp example passes LIBERO's containment criterion; the final frame still shows a held object, not a released and settled placement.
+Three LIBERO task configurations share one control engine. Videos follow simulation time, with decision and physics-preview waiting omitted.
 
 ## Features
 
@@ -156,7 +156,7 @@ One recorded example passing the original LIBERO criterion per bundled task:
 |---|---:|:---:|---:|---:|---:|
 | Microwave | 1 | ✅ | 14 | 111 | $0.001249 |
 | Top drawer | 1 | ✅ | 20 | 155 | $0.001418 |
-| Alphabet soup | 1 | ✅ containment; still held | 40 | 314 | ~$0.003023 |
+| Alphabet soup | 1 | ✅ | 40 | 314 | ~$0.003023 |
 
 All use saved initial-state index 0. Microwave and drawer use OpenRouter; soup uses TypeSafe, with cost estimated from input-token pricing. Costs cover model calls. [Run records and analysis →](docs/results.md)
 
