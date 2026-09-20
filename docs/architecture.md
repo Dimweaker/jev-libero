@@ -7,7 +7,7 @@
 - `world.py`: generic Cartesian execution, contact features, full snapshots and reversible one-/two-step previews.
 - `geometry.py`: independent FCL distance queries over MuJoCo collision shapes.
 - `config.py`, `policy.py`: safe expressions, effect eligibility, and serial Jev decisions.
-- `client.py`: OpenRouter Decisions requests, cost admission checks and credential-free request-body logs.
+- `client.py`: OpenRouter or official TypeSafe requests, cost admission checks and credential-free request-body logs. Official token-based cost estimates are recorded separately from raw API responses.
 - `runner.py`, `records.py`, `cli.py`: bounded runs, artifacts, inspection and offline control replay.
 
 The public package contains no replay-based task controller. `replay` is a separate, explicitly offline verification command.

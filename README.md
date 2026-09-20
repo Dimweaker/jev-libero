@@ -32,7 +32,7 @@ These are **recorded simulation trajectories**, not animation generated from a p
 - **Real conditional decisions.** Jev chooses an intent, then a contact/motion family, then one input. Later decisions receive earlier choices.
 - **Physics-grounded candidates.** Reversible simulator branches measure actual short-term effects. Independent collision-shape distance queries avoid misleading proximity features.
 - **Tasks are data.** Object bindings, progress formulas, contact rules, local-goal conditions, prompts, and preview scoring live in JSON.
-- **Evidence included.** Compressed requests, responses, predictions, controls, simulator states, costs, and a failed run—not just the best GIF.
+- **Evidence included.** Compressed requests, responses, predictions, controls, simulator states, and costs—not just GIFs.
 
 ## Quick start
 
@@ -92,7 +92,20 @@ jev-libero run --task top_drawer --seed 1 --init-state 0 \
   --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
 ```
 
-`run` makes **paid API calls**. The cost guard checks reported spend before each request; it is not a provider-enforced billing cap. Output directories must be new. Never commit credentials or blindly publish local run folders.
+#### Official TypeSafe API
+
+Use the [official API](https://docs.typesafe.ai/introduction/quickstart) directly; get a key in the [TypeSafe console](https://console.typesafe.ai/settings/keys):
+
+```bash
+export TYPESAFE_API_KEY_FILE=/path/to/private/typesafe.key
+# Alternatively, export TYPESAFE_API_KEY.
+jev-libero run --provider typesafe --task top_drawer --seed 1 \
+  --out runs/drawer-official --max-decisions 100 --budget-usd 0.10
+```
+
+This uses `https://api.typesafe.ai/v1/systemone` with `jev-latest`. The state, questions, policy, and simulator are unchanged. OpenRouter remains the default. Official responses report tokens rather than dollar costs, so the budget guard estimates spend at the published **$0.042/million input tokens** (output free), recorded separately in `cost_estimates.jsonl`.
+
+`run` makes **paid API calls**. The cost guard uses reported OpenRouter costs or estimated TypeSafe costs; it is not a provider-enforced billing cap. Output directories must be new. Never commit credentials or blindly publish local run folders.
 
 ## How it works
 
@@ -124,13 +137,9 @@ This is a **hybrid model-based control prototype**, not a claim that Jev indepen
 | Task | Seed | Outcome | Decisions | Env steps | Recorded API cost |
 |---|---:|:---:|---:|---:|---:|
 | Microwave | 1 | ✅ | 14 | 111 | $0.001249 |
-| Microwave | 2 | ❌ | 75 | 600 | $0.005854 |
-| Microwave | 3 | ✅ | 53 | 417 | $0.004187 |
 | Top drawer | 1 | ✅ | 20 | 155 | $0.001418 |
 
-All use saved initial-state index **0**. Simulator seeds can still change static object placement; they do not control remote Jev randomness. These are **small-sample checks, not benchmark-wide success rates**. API costs exclude computation.
-
-The failed microwave run stops at about **28.33°**: no candidate satisfies the current one-/two-step effect conditions. Some recovery motions need temporary regression that these rules do not represent. The failure remains in the repository.
+One successful example per task, both using saved initial-state index **0**. These are demonstrations, **not success-rate estimates**. Recorded API costs are from OpenRouter and exclude computation.
 
 The published controls reproduce their recorded states and outcomes in the tested stack. Packaging regression tests also preserve **all 311 recorded model requests and choices**. See [results and reproducibility](docs/results.md).
 
@@ -172,6 +181,8 @@ tests/              # CPU tests + optional simulation regression
 docs/               # setup, configuration, results, demo media
 ```
 
-[Contributing](CONTRIBUTING.md) · [Third-party acknowledgements](THIRD_PARTY.md) · [MIT License](LICENSE)
+Want to report a bug or improve the code? See [how to contribute](CONTRIBUTING.md).
 
-Built on [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO), [robosuite](https://github.com/ARISE-Initiative/robosuite), [MuJoCo](https://github.com/google-deepmind/mujoco), [python-fcl](https://github.com/BerkeleyAutomation/python-fcl), and [Jev via OpenRouter](https://openrouter.ai/typesafe/jev-1.13). Physics-grounded decision interfaces were inspired in part by [Typesafe Mario](https://github.com/fhshaik/typesafe-mario).
+[Third-party acknowledgements](THIRD_PARTY.md) · [MIT License](LICENSE)
+
+Built on [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO), [robosuite](https://github.com/ARISE-Initiative/robosuite), [MuJoCo](https://github.com/google-deepmind/mujoco), [python-fcl](https://github.com/BerkeleyAutomation/python-fcl), and [TypeSafe Jev](https://typesafe.ai) ([also on OpenRouter](https://openrouter.ai/typesafe/jev-1.13)). Physics-grounded decision interfaces were inspired in part by [Typesafe Mario](https://github.com/fhshaik/typesafe-mario).

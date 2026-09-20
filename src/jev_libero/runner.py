@@ -53,6 +53,7 @@ def run(
     libero_root=None,
     config_dir=None,
     key_file=None,
+    provider="openrouter",
 ):
     from .world import World
 
@@ -71,6 +72,8 @@ def run(
             "seed": seed,
             "max_decisions": max_decisions,
             "budget_usd": budget_usd,
+            "provider": provider,
+            "cost_basis": "token-price estimate" if provider == "typesafe" else "reported API cost",
             "candidate_controls": ACTIONS,
             "horizon_environment_steps": 8,
             "collision_aware": True,
@@ -98,7 +101,7 @@ def run(
     termination = "decision_limit"
     final = None
     try:
-        api = Decisions(out, budget_usd=budget_usd, key_file=key_file)
+        api = Decisions(out, budget_usd=budget_usd, key_file=key_file, provider=provider)
         world = World(
             init_index=init_state,
             render=render,
@@ -242,6 +245,8 @@ def run(
             "intent_calls": policy.intent_calls,
             "strategy_calls": policy.strategy_calls,
             "cost_usd": api.total if api else 0.0,
+            "provider": provider,
+            "cost_basis": "token-price estimate" if provider == "typesafe" else "reported API cost",
             "initial_state": init_state,
             "seed": seed,
             "task_config_name": cfg["name"],

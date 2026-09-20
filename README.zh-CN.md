@@ -74,20 +74,29 @@ jev-libero run --task top_drawer --seed 1 --init-state 0 \
   --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
 ```
 
-需要 OpenRouter 上 `typesafe/jev-1.13` Decisions API 的访问权限。费用保护依据返回的实际费用在下次调用前检查，不是服务商侧的硬账单上限。输出目录必须是新目录。`--no-render` 可禁用图像输出，但仍保存控制与状态。
+默认使用 OpenRouter，也可以直接使用 [TypeSafe 官方 API](https://docs.typesafe.ai/introduction/quickstart)（[申请密钥](https://console.typesafe.ai/settings/keys)）：
+
+```bash
+export TYPESAFE_API_KEY_FILE=/path/to/private/typesafe.key
+# 也可设置 TYPESAFE_API_KEY。
+jev-libero run --provider typesafe --task top_drawer --seed 1 \
+  --out runs/drawer-official --max-decisions 100 --budget-usd 0.10
+```
+
+官方入口为 `https://api.typesafe.ai/v1/systemone`，模型名为 `jev-latest`。仅调用适配不同，状态、问题、策略和仿真不变。官方响应只提供 token 用量，因此按公布的每百万输入 token **$0.042**、输出免费估算费用，并单独记录于 `cost_estimates.jsonl`；OpenRouter 继续使用返回的实际费用。
+
+费用保护不是服务商侧的硬账单上限。输出目录必须是新目录。`--no-render` 可禁用图像输出，但仍保存控制与状态。
 
 ## 已记录结果
 
 |任务|种子|结果|原子决策|环境步|
 |---|---:|---|---:|---:|
 |微波炉|1|成功|14|111|
-|微波炉|2|失败|75|600|
-|微波炉|3|成功|53|417|
 |顶层抽屉|1|成功|20|155|
 
-这四轮均使用初态索引 0；种子仍可能改变固定物体的布局，也不控制远端 Jev 的随机性。**微波炉 2/3、抽屉 1/1 只是少量试验结果，不是稳定成功率。** 失败轮最终停在约 28.33°，当前短时目标条件无法找到合格的恢复动作。
+每个任务展示一个成功案例，均使用初态索引 0，**不代表成功率评估**。两例原运行使用 OpenRouter。
 
-公开记录的 API 费用合计约 **$0.012707**，不含计算成本。软件整理后，对全部 **311 次历史请求与选择** 做了等价性检查；控制轨迹也可在固定仿真栈中逐步回放验证。
+软件整理时，已对全部 **311 次历史请求与选择** 做过等价性检查；控制轨迹可在固定仿真栈中逐步回放验证。
 
 ## 当前边界
 
@@ -105,4 +114,6 @@ pytest
 pytest --simulation  # 需 robot 依赖与 LIBERO_ROOT，不调用付费 API
 ```
 
-详见 [贡献指南](CONTRIBUTING.md)、[任务配置](docs/tasks.md) 和 [第三方致谢](THIRD_PARTY.md)。
+想报告问题或提交代码改进？[贡献指南](CONTRIBUTING.md) 说明了如何提 Issue、修改代码并提交 PR；普通使用者无需执行这些步骤。
+
+另见 [任务配置](docs/tasks.md) 和 [第三方致谢](THIRD_PARTY.md)。

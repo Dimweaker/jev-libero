@@ -1,8 +1,21 @@
-# Contributing
+# How to contribute / 如何参与开发
 
-Thank you for helping make small robot decisions easier to inspect and reproduce.
+This page is for people who want to report bugs or change the project. **You do not need these steps just to run the demos.**
 
-## Local checks
+本页面向想报告问题或改进项目的人；**只是使用项目，不需要执行这些步骤。**
+
+## Report a problem / 报告问题
+
+Open a [GitHub issue](https://github.com/Dimweaker/jev-libero/issues) with your command, dependency versions, expected result, and the error you saw. Remove API keys and private information from any attached logs.
+
+在 Issue 中写明运行命令、依赖版本、预期结果和实际报错。上传日志前删除密钥和私人信息。
+
+## Change the code / 修改代码
+
+1. Fork the repository and create a branch for your change. / Fork 仓库，为修改创建分支。
+2. Make your change. Task definitions are in `src/jev_libero/tasks/`; API access is in `client.py`; simulation is in `world.py`. / 根据改动选择对应文件。
+3. Run the relevant local checks below. They do not make paid API calls. / 运行与修改相关的本地检查，不调用付费 API。
+4. Open a pull request (PR) explaining what changed and why. / 提交 PR，说明改了什么、解决什么问题。
 
 ```bash
 pip install -e '.[dev]'
@@ -11,18 +24,6 @@ ruff format --check src tests tools
 pytest
 ```
 
-With the robot extra and `LIBERO_ROOT` configured, run `pytest --simulation`. Tests use fixtures/mocks, never paid API calls. Simulation regression may take several minutes.
+Only changes to physics/control need the additional simulator checks (`pytest --simulation`, with the robot dependencies and `LIBERO_ROOT` configured). API/documentation-only changes do not require rerunning robot episodes.
 
-## Changes we can evaluate
-
-- Keep reusable mechanics in the engine and task semantics in JSON. Do not add task-name conditionals or success-trajectory playback to the live controller.
-- For geometry/control changes, include an offline regression and check state restoration as well as derived measurements.
-- Preserve failed runs when reporting results. Record configuration, seeds, initial-state index, engine versions, actual controls and API costs. Distinguish replay from new inference.
-- Do not quietly override a model choice, relax a success predicate, or substitute fallback values to hide a broken measurement.
-- Keep real-world safety claims out of simulator-only results.
-
-## Issues and pull requests
-
-Describe the expected/observed behavior, exact command, task configuration, dependency versions and a minimal reproducible record. Review logs before uploading: remove credentials and any private user data or machine paths. Never include an API key. Avoid checking in entire local run directories, virtual environments, or upstream assets.
-
-Small, focused PRs with explicit limitations are preferred to unverified success claims.
+只有涉及物理或控制逻辑的修改才需要额外的仿真检查；只修改 API 接入或文档，无需重跑机器人任务。

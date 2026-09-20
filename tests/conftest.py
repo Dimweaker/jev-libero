@@ -23,6 +23,8 @@ def pytest_collection_modifyitems(config, items):
 def without_live_api_credentials(monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY_FILE", raising=False)
+    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+    monkeypatch.delenv("TYPESAFE_API_KEY_FILE", raising=False)
 
 
 @pytest.fixture(scope="session")

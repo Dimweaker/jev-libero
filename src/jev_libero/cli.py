@@ -34,8 +34,11 @@ def main(argv=None):
     live.add_argument(
         "--no-render", action="store_true", help="Save controls/state, but no GIF or camera frames"
     )
+    live.add_argument("--provider", choices=("openrouter", "typesafe"), default="openrouter")
     live.add_argument(
-        "--api-key-file", type=Path, help="Alternatively use OPENROUTER_API_KEY[_FILE]"
+        "--api-key-file",
+        type=Path,
+        help="Private key file; otherwise use the selected provider's API_KEY[_FILE] variables",
     )
     replay = sub.add_parser("replay", help="Replay recorded controls; no API key or model calls")
     replay.add_argument("folder", type=Path)
@@ -76,6 +79,7 @@ def main(argv=None):
             libero_root=args.libero_root,
             config_dir=args.libero_config_dir,
             key_file=args.api_key_file,
+            provider=args.provider,
         )
         print(json.dumps(result, indent=2))
         return 0 if result["success"] else 1

@@ -48,18 +48,26 @@ This still makes paid Jev calls. `jev-libero replay ...` runs without cameras or
 | `MUJOCO_GL` | Renderer backend; defaults to `egl` during environment setup |
 | `OPENROUTER_API_KEY` | API credential supplied through the environment |
 | `OPENROUTER_API_KEY_FILE` / `--api-key-file` | Alternative private credential file |
+| `TYPESAFE_API_KEY` | Official TypeSafe credential; select `--provider typesafe` |
+| `TYPESAFE_API_KEY_FILE` | Official credential file; `--api-key-file` also works for the selected provider |
 | Standard `HTTPS_PROXY` / `HTTP_PROXY` | Optional network proxy, handled by requests |
 
 The default generated LIBERO configuration is under `$XDG_CACHE_HOME/jev-libero/libero` or `~/.cache/jev-libero/libero`, not `~/.libero`. A conflicting existing configuration is not overwritten. Use another config directory or deliberately remove the app-owned cache when changing checkouts. LIBERO captures its config path at import time, so use a new process when changing it.
 
 The package does not load `.env` automatically. `.env.example` documents variable names; export values yourself or use your preferred environment manager. Never paste a real key into an issue or commit it.
 
+## Official API
+
+[Official documentation](https://docs.typesafe.ai/introduction/quickstart) · [API keys](https://console.typesafe.ai/settings/keys)
+
+Use `--provider typesafe` to call `POST https://api.typesafe.ai/v1/systemone` with `jev-latest`. The account's available model names can be listed at `GET https://api.typesafe.ai/v1/models`. OpenRouter stays the default, using `typesafe/jev-1.13`; the official API exposes a moving alias rather than that pinned OpenRouter name. Only transport, credentials, model naming and cost accounting differ—not policy or physics.
+
 ## Common outcomes
 
 - **No feasible action:** an explicit policy stop, not an automatically executed fallback. Inspect the last prediction and the configured contracts. The published microwave seed-2 case demonstrates this limit.
 - **Replay mismatch:** check engine versions, task JSON, seed, initial-state index, and LIBERO revision. Do not loosen tolerances just to claim a match.
 - **Distance/witness inconsistency:** a geometry error. The run stops rather than treating an invalid zero as successful contact. See [architecture](architecture.md#geometry).
-- **Budget limit:** the client reserves $0.005 before another call and reads actual usage costs afterward. This is conservative admission control, not a guaranteed provider-side maximum.
+- **Budget limit:** the client reserves $0.005 before another call. OpenRouter returns dollar costs; the official TypeSafe API returns token counts, so official costs are estimated at the published $0.042/million input tokens, with free output. Estimates are stored separately without modifying the raw response. This is admission control, not a guaranteed provider-side maximum.
 - **TLS/HTTP failure:** logs retain the attempted decision. One TLS retry is made; other errors are not silently retried. Inspect the output before deciding whether to start a new run, since requests may incur costs.
 
 ## Local validation
