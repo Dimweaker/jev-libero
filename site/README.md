@@ -39,6 +39,10 @@ Build `_site/` before testing. Browser checks serve the site under `/jev-libero/
 
 The page's visual direction draws on the oversized typography and color treatments of [TypeSafe](https://typesafe.ai), the simulation-first presentation of [JevPilot](https://github.com/standardagents/jevpilot), and the probability dashboard of [TypeSafe Mario](https://github.com/fhshaik/typesafe-mario). The website implementation and graphics are original; no third-party site assets are bundled.
 
+## Share images
+
+`assets/social-preview.png` is a direct capture of the upper replay panel at microwave decision 07, sized to 1200×630 for Open Graph and X cards. `assets/github-preview.png` uses the same capture at 1280×640 for the repository's **Settings → Social preview** upload.
+
 ## Publishing
 
 Set the repository's **Settings → Pages → Source** to **GitHub Actions**. `.github/workflows/pages.yml` builds, checks, and deploys changes to the site, source records, or videos on `main`.

@@ -137,6 +137,7 @@ def build(out):
     out.mkdir(parents=True, exist_ok=True)
     for name in ("index.html", "style.css", "app.js", "replay.js", "favicon.svg"):
         shutil.copyfile(ROOT / "site" / name, out / name)
+    shutil.copytree(ROOT / "site" / "assets", out / "assets", dirs_exist_ok=True)
     (out / ".nojekyll").touch()
     for name in ("data", "media"):
         (out / name).mkdir(exist_ok=True)
