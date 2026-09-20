@@ -8,6 +8,8 @@
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-70c8a4.svg)](LICENSE)
 
+[**Open the interactive Decision Lab ↗**](https://dimweaker.github.io/jev-libero/)
+
 [Demos](#demos) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Results](#recorded-results) · [Task configs](#configure-your-own-task) · [简体中文](README.zh-CN.md)
 
 </div>
@@ -177,6 +179,8 @@ examples/records/   # recorded episodes
 tests/              # core and simulation tests
 docs/               # guides and demo media
 ```
+
+The [Decision Lab website](site/README.md) has its own static build and browser checks.
 
 Want to report a bug or improve the code? See [how to contribute](CONTRIBUTING.md).
 

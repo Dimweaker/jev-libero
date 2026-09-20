@@ -1,0 +1,84 @@
+name: Decision Lab Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'tools/build_site.py'
+      - 'examples/records/**'
+      - 'docs/media/*.mp4'
+      - '.github/workflows/pages.yml'
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'tools/build_site.py'
+      - 'examples/records/**'
+      - 'docs/media/*.mp4'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Export recorded data and assemble static site
+        run: |
+          python -m pip install numpy==1.26.4
+          python tools/build_site.py --out _site
+      - name: Install website development tools
+        working-directory: site
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check replay data and formatting
+        working-directory: site
+        run: |
+          npm test
+          npx prettier --check '*.html' '*.css' '*.js' 'tests/*.mjs'
+      - name: Install browser
+        working-directory: site
+        run: npx playwright install --with-deps chromium
+      - name: Verify both episodes in desktop and mobile layouts
+        working-directory: site
+        run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: decision-lab-preview
+          path: site/test-results/
+          retention-days: 7
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

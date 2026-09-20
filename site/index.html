@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f5ef" />
+    <meta
+      name="description"
+      content="Watch Jev control a robot, one decision at a time. An interactive LIBERO replay with synchronized video, choice probabilities, and physical trajectories."
+    />
+    <meta
+      property="og:title"
+      content="Jev × LIBERO — Small decisions. Physical outcomes."
+    />
+    <meta
+      property="og:description"
+      content="Step inside a robot's control loop. Explore recorded Jev choices, physics previews, and trajectories side by side."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dimweaker.github.io/jev-libero/" />
+    <title>Jev × LIBERO / Decision Lab</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#explorer">Skip to the replay</a>
+    <header class="masthead wrap">
+      <a class="brand" href="./" aria-label="Jev LIBERO home"
+        ><span class="brand-mark" aria-hidden="true">✳</span> Jev
+        <span class="brand-times">×</span> LIBERO</a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#how">How it works</a
+        ><a href="https://github.com/Dimweaker/jev-libero" class="repo-link"
+          >GitHub <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+    </header>
+    <main class="wrap">
+      <section class="hero" aria-labelledby="headline">
+        <div>
+          <div class="eyebrow">
+            <span class="signal"></span> THE DECISION LAB
+            <span class="muted">/ ROBOTICS</span>
+          </div>
+          <h1 id="headline">
+            Small decisions.<br /><span>Physical outcomes.</span>
+          </h1>
+        </div>
+        <div class="hero-aside">
+          <div class="orbit" aria-hidden="true">
+            <span></span><span></span><span></span><b>↗</b>
+          </div>
+          <p>Watch a robot move.<br />See what Jev chose.</p>
+          <div class="hero-meta mono">
+            27 INPUTS <span>·</span> 3 DECISION LAYERS
+          </div>
+        </div>
+      </section>
+      <section
+        id="explorer"
+        class="explorer"
+        aria-label="Interactive trajectory replay"
+        aria-busy="true"
+      >
+        <div class="lab-topbar">
+          <div class="scene-tabs" role="tablist" aria-label="Recorded task">
+            <button
+              id="tab-microwave"
+              role="tab"
+              aria-selected="true"
+              aria-controls="episode-panel"
+              data-episode="microwave"
+            >
+              <span class="mono">01</span> Microwave
+            </button>
+            <button
+              id="tab-top-drawer"
+              role="tab"
+              aria-selected="false"
+              aria-controls="episode-panel"
+              data-episode="top-drawer"
+              tabindex="-1"
+            >
+              <span class="mono">02</span> Top drawer
+            </button>
+          </div>
+          <span class="lab-mode mono"
+            ><i></i> RECORDED RUN
+            <span class="desktop-only">/ SEED 01</span></span
+          >
+        </div>
+        <div id="load-status" class="load-status" role="status">
+          Loading the recorded episode…
+        </div>
+        <div id="episode-panel" role="tabpanel" aria-labelledby="tab-microwave">
+          <div class="stage-grid">
+            <section class="video-panel" aria-labelledby="episode-title">
+              <div class="panel-heading">
+                <span class="eyebrow">THE MOTION</span
+                ><span id="outcome" class="status-tag">READY</span>
+              </div>
+              <div class="video-frame">
+                <video
+                  id="video"
+                  muted
+                  playsinline
+                  preload="auto"
+                  aria-label="Recorded LIBERO robot trajectory"
+                ></video>
+                <div class="video-corners" aria-hidden="true"></div>
+                <div class="video-top">
+                  <span class="video-label mono">PANDA / OSC</span
+                  ><span id="frame-counter" class="video-label mono"
+                    >000 / 111</span
+                  >
+                </div>
+                <div class="video-bottom">
+                  <div>
+                    <span class="video-kicker mono">EXECUTING</span
+                    ><strong id="action-overlay">—</strong>
+                  </div>
+                  <span id="contact-overlay" class="contact-badge"
+                    >FREE SPACE</span
+                  >
+                </div>
+                <button
+                  id="video-toggle"
+                  class="video-toggle"
+                  aria-label="Play trajectory"
+                >
+                  <span aria-hidden="true">▶</span>
+                </button>
+              </div>
+              <div class="video-caption">
+                <h2 id="episode-title">Close the microwave</h2>
+                <span class="mono">20 Hz <span class="muted">/ SIM</span></span>
+              </div>
+            </section>
+            <section class="decision-panel" aria-labelledby="decision-title">
+              <div class="panel-heading">
+                <h2 id="decision-title" class="eyebrow">INSIDE THE DECISION</h2>
+                <span id="decision-counter" class="mono small">01 / 14</span>
+              </div>
+              <div id="flow" class="flow" aria-label="Decision layers"></div>
+              <div class="distribution-header">
+                <div>
+                  <span id="layer-number" class="tiny-label">03 / MOTOR</span>
+                  <h3 id="distribution-title">Which input?</h3>
+                </div>
+                <div class="confidence">
+                  <span id="confidence-value">—</span><small>confidence</small>
+                </div>
+              </div>
+              <div class="distribution-meta">
+                <span id="call-status">Recorded Choice response</span
+                ><span id="option-count" class="mono">— options</span>
+              </div>
+              <div
+                id="probabilities"
+                class="probabilities"
+                aria-label="Recorded choice probabilities"
+              ></div>
+              <div id="candidate-detail" class="candidate-detail"></div>
+              <div class="effect-section">
+                <span class="tiny-label">CHOSEN INPUT / TASK PROGRESS</span>
+                <div class="effect-pair">
+                  <div>
+                    <span>FORECAST · ACTION END</span
+                    ><strong id="forecast-effect">—</strong>
+                  </div>
+                  <div>
+                    <span>OBSERVED · THIS FRAME</span
+                    ><strong id="observed-effect">—</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="decision-foot">
+                <span class="mono">CHOICE <span class="muted">/ Jev</span></span
+                ><span id="call-latency" class="mono">— ms</span
+                ><button
+                  id="inspect-request"
+                  class="text-button"
+                  aria-haspopup="dialog"
+                >
+                  Inspect request <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </section>
+          </div>
+          <div class="transport">
+            <div class="transport-controls">
+              <button
+                id="previous"
+                class="icon-button"
+                aria-label="Previous decision"
+              >
+                ←</button
+              ><button
+                id="play"
+                class="play-button"
+                aria-label="Play trajectory"
+              >
+                ▶ <span>Play</span></button
+              ><button id="next" class="icon-button" aria-label="Next decision">
+                →
+              </button>
+            </div>
+            <div class="scrubber">
+              <label class="sr-only" for="seek">Simulation time</label
+              ><input
+                id="seek"
+                type="range"
+                min="0"
+                max="5.55"
+                step="0.001"
+                value="0"
+              />
+              <div class="time-labels mono">
+                <span id="clock">00.00</span><span>SIMULATION TIME</span
+                ><span id="duration">05.55 s</span>
+              </div>
+            </div>
+            <div class="speed-control">
+              <label for="speed" class="sr-only">Playback speed</label
+              ><select id="speed">
+                <option value="0.25" selected>¼× speed</option>
+                <option value="0.5">½× speed</option>
+                <option value="1">1× speed</option>
+              </select>
+            </div>
+          </div>
+          <div class="timeline-wrap">
+            <div class="timeline-label">
+              <span class="tiny-label">DECISION TRACK</span
+              ><span class="mono tiny muted">CLICK TO EXPLORE</span>
+            </div>
+            <div
+              id="timeline"
+              class="timeline"
+              aria-label="Jump to a decision"
+            ></div>
+            <div class="timeline-legend">
+              <span><i class="approach"></i>Approach</span
+              ><span><i class="establish"></i>Contact</span
+              ><span><i class="advance"></i>Advance</span
+              ><span><i class="release"></i>Release / reposition</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section
+        class="telemetry-grid"
+        aria-label="Trajectory and candidate views"
+      >
+        <article class="telemetry-card progress-card">
+          <div class="card-heading">
+            <h2 class="eyebrow" id="measure-title">DOOR OPENING</h2>
+            <span class="tiny-label">MEASURED / 20 Hz</span>
+          </div>
+          <div class="measure-value">
+            <span id="measure">—</span><small id="unit">°</small
+            ><span class="measurement-note">remaining</span>
+          </div>
+          <svg
+            id="progress-chart"
+            viewBox="0 0 480 115"
+            role="img"
+            aria-label="Recorded task progress"
+          >
+            <defs>
+              <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#b5d369" stop-opacity=".42" />
+                <stop offset="1" stop-color="#b5d369" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path id="chart-area" fill="url(#area)" />
+            <path
+              id="chart-line"
+              fill="none"
+              stroke="#343d29"
+              stroke-width="2"
+            />
+            <line
+              id="chart-cursor"
+              y1="5"
+              y2="105"
+              stroke="#d169ad"
+              stroke-dasharray="3 4"
+            />
+            <circle
+              id="chart-dot"
+              r="4"
+              fill="#d169ad"
+              stroke="#f5f5ef"
+              stroke-width="2"
+            />
+          </svg>
+          <div class="chart-caption mono">
+            <span>START</span><span id="chart-end">5.55 s</span>
+          </div>
+        </article>
+        <article class="telemetry-card">
+          <div class="card-heading">
+            <h2 class="eyebrow">THE ACTION SPACE</h2>
+            <span id="candidate-count" class="tiny-label">27 → —</span>
+          </div>
+          <div
+            id="action-grid"
+            class="action-grid"
+            aria-label="All 27 primitive inputs"
+          ></div>
+          <div class="action-legend">
+            <span><i class="selected"></i>Chosen</span
+            ><span><i class="offered"></i>Offered to Jev</span
+            ><span><i class="feasible"></i>Other feasible</span>
+          </div>
+        </article>
+        <article class="telemetry-card path-card">
+          <div class="card-heading">
+            <h2 class="eyebrow">THE TRAJECTORY</h2>
+            <label class="tiny-label" for="projection"
+              >VIEW
+              <select id="projection">
+                <option value="xz">XZ</option>
+                <option value="xy">XY</option>
+                <option value="yz">YZ</option>
+              </select></label
+            >
+          </div>
+          <svg
+            id="path-chart"
+            viewBox="0 0 300 160"
+            role="img"
+            aria-label="Gripper trajectory at decision boundaries"
+          >
+            <path
+              id="path-grid"
+              stroke="#dfe0d7"
+              stroke-width="1"
+              fill="none"
+              d="M20 40H280 M20 80H280 M20 120H280 M65 15V145 M150 15V145 M235 15V145"
+            />
+            <path
+              id="path-full"
+              fill="none"
+              stroke="#d4d7cb"
+              stroke-width="2"
+            />
+            <path
+              id="path-traveled"
+              fill="none"
+              stroke="#7160a5"
+              stroke-width="2.5"
+            />
+            <g id="path-branches"></g>
+            <g id="path-points"></g>
+            <circle
+              id="path-dot"
+              r="5"
+              fill="#c2acd9"
+              stroke="#2b2632"
+              stroke-width="2"
+            />
+          </svg>
+          <div class="path-caption">
+            <span class="tiny muted">Boundary samples · dashed: preview</span
+            ><span id="path-position" class="mono tiny">—</span>
+          </div>
+        </article>
+      </section>
+      <section id="how" class="how-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">A LOOK UNDER THE HOOD</span>
+            <h2>From state to movement.</h2>
+          </div>
+          <a
+            href="https://github.com/Dimweaker/jev-libero/blob/main/docs/architecture.md"
+            class="text-link"
+            >Explore the architecture ↗</a
+          >
+        </div>
+        <div class="method-grid">
+          <article>
+            <span class="method-number">01</span>
+            <h3>Preview the possibilities.</h3>
+            <p>
+              MuJoCo simulates short branches. Geometry and task conditions turn
+              physical effects into a set of candidate inputs.
+            </p>
+            <div class="method-token">PHYSICS → CANDIDATES</div>
+          </article>
+          <article>
+            <span class="method-number">02</span>
+            <h3>Let Jev choose.</h3>
+            <p>
+              Three connected choices narrow the next move: the objective, the
+              kind of interaction, and one atomic input.
+            </p>
+            <div class="method-token">INTENT → STRATEGY → MOTOR</div>
+          </article>
+          <article>
+            <span class="method-number">03</span>
+            <h3>Move. Observe. Repeat.</h3>
+            <p>
+              The robot executes the selected input. A fresh observation starts
+              the next cycle. Each choice and control is recorded.
+            </p>
+            <div class="method-token">ONE INPUT → NEW STATE</div>
+          </article>
+        </div>
+      </section>
+      <section class="closing">
+        <div>
+          <span class="eyebrow">YOUR NEXT EXPERIMENT</span>
+          <h2>Same engine.<br />Your task.</h2>
+          <p>
+            Start with a bundled task, then shape the goals and decision
+            criteria in JSON.
+          </p>
+        </div>
+        <div class="closing-right">
+          <div class="code-label mono">GET STARTED</div>
+          <pre><code>pip install -e '.[robot]'
+jev-libero run --provider typesafe \
+  --task top_drawer --out runs/demo</code></pre>
+          <a
+            href="https://github.com/Dimweaker/jev-libero#quick-start"
+            class="primary-link"
+            >Setup & source on GitHub <span>↗</span></a
+          >
+        </div>
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="brand" href="./"
+        >Jev <span class="brand-times">×</span> LIBERO</a
+      ><span
+        >Built with <a href="https://typesafe.ai">TypeSafe Jev</a> &
+        <a href="https://github.com/Lifelong-Robot-Learning/LIBERO"
+          >LIBERO</a
+        ></span
+      ><a
+        id="record-link"
+        href="https://github.com/Dimweaker/jev-libero/tree/main/examples/records/microwave_seed1"
+        >View this run's records ↗</a
+      >
+    </footer>
+    <dialog id="request-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-heading">
+        <div>
+          <span class="eyebrow">RECORDED API EXCHANGE</span>
+          <h2 id="dialog-title">Motor choice</h2>
+        </div>
+        <button
+          id="close-dialog"
+          class="icon-button"
+          aria-label="Close request inspector"
+        >
+          ×
+        </button>
+      </div>
+      <p id="dialog-meta" class="muted small"></p>
+      <h3>Request</h3>
+      <pre id="request-json"></pre>
+      <h3>Response</h3>
+      <pre id="response-json"></pre>
+    </dialog>
+    <noscript
+      ><p class="wrap">
+        Enable JavaScript to explore the synchronized replay.
+        <a href="https://github.com/Dimweaker/jev-libero#demos"
+          >Watch the videos on GitHub.</a
+        >
+      </p></noscript
+    >
+  </body>
+</html>

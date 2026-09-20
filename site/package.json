@@ -1,0 +1,14 @@
+{
+  "name": "jev-libero-decision-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/replay.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "format": "prettier --write *.html *.css *.js tests/*.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0",
+    "prettier": "3.8.1"
+  }
+}

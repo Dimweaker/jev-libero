@@ -4,6 +4,8 @@
 
 **用 Jev、物理前视和可配置任务探索机器人控制。**
 
+[**打开交互展示页：视频与 Jev 决策同步回放 ↗**](https://dimweaker.github.io/jev-libero/)
+
 [English](README.md) · [任务配置](docs/tasks.md) · [结果与复现](docs/results.md) · [MIT](LICENSE)
 
 </div>
@@ -153,6 +155,8 @@ pytest --simulation  # 配置 LIBERO 后可选的物理检查
 ```
 
 测试使用模拟或已记录的 API 响应。仿真测试覆盖控制回放、几何测量、快照恢复和两步前视。
+
+[展示页开发说明](site/README.md) 包含静态构建和浏览器检查方法。
 
 想报告问题或提交代码改进？查看 [贡献指南](CONTRIBUTING.md)。
 
