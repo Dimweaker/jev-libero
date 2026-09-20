@@ -16,7 +16,7 @@ Open `http://localhost:8080`. The page is static HTML/CSS/JavaScript; visitors d
 
 ## Data and timing
 
-`tools/build_site.py` exports the two featured seed-1 recordings from `examples/records/` and copies their MP4s. The generated `_site/` folder contains the deployable website.
+`tools/build_site.py` exports three featured seed-1 recordings (microwave, drawer, and alphabet soup) from `examples/records/` and copies their MP4s. Grasp progress uses the recorded 20 Hz measurements rather than a joint-state column. Its visible outcome note distinguishes native containment from release and settling. The generated `_site/` folder contains the deployable website.
 
 - Each primitive's recorded step count defines its video interval, including the shorter final actions.
 - The 20 Hz progress curve comes from saved simulator states. Render frame zero follows the first control step, so video frame `i` corresponds to measured state `i + 1`.
@@ -35,7 +35,7 @@ npm run test:browser
 npm run format
 ```
 
-Build `_site/` before testing. Browser checks serve the site under `/jev-libero/`, exercise all 34 decisions, validate both video durations and final states, and capture desktop/mobile screenshots in `site/test-results/`.
+Build `_site/` before testing. Browser checks serve the site under `/jev-libero/`, exercise all 74 decisions, validate all three video durations, final states, and outcome notes, and capture desktop/mobile screenshots in `site/test-results/`.
 
 The page's visual direction draws on the oversized typography and color treatments of [TypeSafe](https://typesafe.ai), the simulation-first presentation of [JevPilot](https://github.com/standardagents/jevpilot), and the probability dashboard of [TypeSafe Mario](https://github.com/fhshaik/typesafe-mario). The website implementation and graphics are original; no third-party site assets are bundled.
 

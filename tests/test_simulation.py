@@ -12,7 +12,15 @@ pytestmark = pytest.mark.simulation
 
 
 @pytest.mark.parametrize(
-    "name", ["microwave_seed1", "microwave_seed2", "microwave_seed3", "top_drawer_seed1"]
+    "name",
+    [
+        "microwave_seed1",
+        "microwave_seed2",
+        "microwave_seed3",
+        "top_drawer_seed1",
+        "alphabet_soup_seed1",
+        "alphabet_soup_seed1_initial",
+    ],
 )
 def test_published_controls_replay(simulator, records_root, name):
     from jev_libero.records import replay

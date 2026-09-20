@@ -16,6 +16,14 @@ ROOT = Path(__file__).resolve().parents[1]
 EPISODES = (
     ("microwave", "microwave_seed1", "Close the microwave", "qpos_rad", -180 / math.pi),
     ("top-drawer", "top_drawer_seed1", "Close the top drawer", "qpos_m", -1000),
+    (
+        "alphabet-soup",
+        "alphabet_soup_seed1",
+        "Grasp and lower into the basket",
+        "goal_distance_mm",
+        1,
+        "LIBERO containment passed. The object is still held at the final frame; release and settling were not demonstrated. Cost is a TypeSafe token-price estimate.",
+    ),
 )
 
 
@@ -24,7 +32,9 @@ def read_lines(path):
         return [json.loads(line) for line in stream]
 
 
-def episode(slug, record, title, joint_field, scale):
+def episode(
+    slug, record, title, joint_field, scale, outcome_note="Original LIBERO success criterion."
+):
     folder = ROOT / "examples" / "records" / record
     traces = read_lines(folder / "trace.jsonl.gz")
     predictions = read_lines(folder / "predictions.jsonl.gz")
@@ -44,15 +54,30 @@ def episode(slug, record, title, joint_field, scale):
         boundaries.append((frame, pred["before"][joint_field]))
         frame += pred["predictions"][trace["choice"]]["steps"]
     boundaries.append((frame, final[joint_field]))
-    columns = [
-        col
-        for col in range(states.shape[1])
-        if all(abs(states[index, col] - value) < 1e-10 for index, value in boundaries)
-    ]
-    assert len(columns) == 1, f"Joint column is ambiguous: {columns}"
     assert frame == summary["sim_steps"]
     assert np.allclose(np.diff(states[:, 0]), 0.05, atol=1e-10, rtol=0)
-    samples = (states[:, columns[0]] * scale).tolist()
+    measurement_file = folder / "measurements.jsonl.gz"
+    if measurement_file.exists():
+        measured = read_lines(measurement_file)
+        assert len(measured) == frame
+        assert np.allclose(
+            [r["features"]["sim_time_s"] for r in measured], states[1:, 0], atol=1e-10, rtol=0
+        )
+        for index, row in enumerate(measured):
+            decision = row["decision"]
+            assert boundaries[decision][0] + row["frame_in_action"] == index
+            assert row["input"] == traces[decision]["choice"]
+        samples = [boundaries[0][1] * scale] + [
+            r["features"][joint_field] * scale for r in measured
+        ]
+    else:
+        columns = [
+            col
+            for col in range(states.shape[1])
+            if all(abs(states[index, col] - value) < 1e-10 for index, value in boundaries)
+        ]
+        assert len(columns) == 1, f"Joint column is ambiguous: {columns}"
+        samples = (states[:, columns[0]] * scale).tolist()
     steps, active = [], {}
     for index, (trace, pred) in enumerate(zip(traces, predictions)):
         fresh = []
@@ -81,7 +106,10 @@ def episode(slug, record, title, joint_field, scale):
             value = candidate["after"]
             effects[name] = {
                 "gap": value["distance_to_moving_geometry_mm"],
-                "progress": candidate.get("closing_degrees", candidate.get("closing_mm")),
+                "progress": candidate.get(
+                    "closing_degrees",
+                    candidate.get("closing_mm", candidate.get("delivery_progress_mm")),
+                ),
                 "contact": value["moving_contact"],
                 "eef": value["eef_mm"],
             }
@@ -121,7 +149,12 @@ def episode(slug, record, title, joint_field, scale):
         "duration": frame / 20,
         "video": f"media/{slug}.mp4",
         "unit": "°" if joint_field == "qpos_rad" else "mm",
-        "measure": "Door opening" if joint_field == "qpos_rad" else "Drawer remaining",
+        "measure": {
+            "qpos_rad": "Door opening",
+            "qpos_m": "Drawer remaining",
+            "goal_distance_mm": "Object-to-goal distance",
+        }[joint_field],
+        "outcomeNote": outcome_note,
         "summary": summary,
         "actions": list(config["candidate_controls"]),
         "samples": samples,

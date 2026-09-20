@@ -16,7 +16,7 @@ def test_action_vocabulary():
     assert {"open", "close", "hold"} <= ACTIONS.keys()
 
 
-@pytest.mark.parametrize("name", ["microwave", "top_drawer"])
+@pytest.mark.parametrize("name", ["microwave", "top_drawer", "alphabet_soup"])
 def test_bundled_configs(name):
     cfg = load_task(name)
     assert cfg["binding"]["success"] == "libero"

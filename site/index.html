@@ -110,6 +110,16 @@
             >
               <span class="mono">02</span> Top drawer
             </button>
+            <button
+              id="tab-alphabet-soup"
+              role="tab"
+              aria-selected="false"
+              aria-controls="episode-panel"
+              data-episode="alphabet-soup"
+              tabindex="-1"
+            >
+              <span class="mono">03</span> Grasp
+            </button>
           </div>
           <span class="lab-mode mono"
             ><i></i> RECORDED RUN
@@ -162,6 +172,9 @@
                 <h2 id="episode-title">Close the microwave</h2>
                 <span class="mono">20 Hz <span class="muted">/ SIM</span></span>
               </div>
+              <p id="episode-note" class="episode-note">
+                Original LIBERO success criterion.
+              </p>
             </section>
             <section class="decision-panel" aria-labelledby="decision-title">
               <div class="panel-heading">
@@ -266,12 +279,7 @@
               class="timeline"
               aria-label="Jump to a decision"
             ></div>
-            <div class="timeline-legend">
-              <span><i class="approach"></i>Approach</span
-              ><span><i class="establish"></i>Contact</span
-              ><span><i class="advance"></i>Advance</span
-              ><span><i class="release"></i>Release / reposition</span>
-            </div>
+            <div id="timeline-legend" class="timeline-legend"></div>
           </div>
         </div>
       </section>

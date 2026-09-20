@@ -2,7 +2,7 @@ include README.zh-CN.md CONTRIBUTING.md THIRD_PARTY.md .env.example
 recursive-include tests *.py
 recursive-include tools *.py
 recursive-include docs *.md *.svg *.gif *.mp4
-recursive-include examples/records *.md *.json *.jsonl.gz *.npz
+recursive-include examples/records *.md *.json *.jsonl.gz *.npz *.tar.gz
 include site/index.html site/style.css site/app.js site/replay.js site/favicon.svg
 include site/README.md site/package.json site/package-lock.json
 recursive-include site/tests *.mjs

@@ -1,6 +1,8 @@
 # Recorded episodes
 
-These are preserved research-run artifacts, not freshly executed model trials from the packaged CLI. See [results](../../docs/results.md) and [provenance.json](provenance.json).
+These are preserved robot-trial artifacts. The four original microwave/drawer runs predate packaging; the two alphabet-soup trials use the packaged runner with the initial measurement extension. See [results](../../docs/results.md), the original [provenance.json](provenance.json), and each grasp record's `provenance.json`.
+
+Grasp records include the failed initial trial (`alphabet_soup_seed1_initial`) and the containment-passing retry (`alphabet_soup_seed1`). The retry ends while still holding the object, without release and settling. Their `task_config.json` uses the unified measurement interface for replay; `original_task_config.json` and `original_source.tar.gz` preserve the capture-time implementation. Original API calls, controls and measurements are unchanged. `measurements.jsonl.gz` contains per-control-step observations, and `cost_estimates.jsonl.gz` contains TypeSafe token-price estimates.
 
 Each directory contains:
 

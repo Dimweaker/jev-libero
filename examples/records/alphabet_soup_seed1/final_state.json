@@ -1,0 +1,202 @@
+{
+  "jaw_center_mm": [
+    4.521683381842179,
+    251.2037392699058,
+    157.4493276619307
+  ],
+  "jaw_axis": [
+    -0.0010580196837195843,
+    0.9999979843400572,
+    0.001706432000310288
+  ],
+  "target_center_mm": [
+    3.8762325051937414,
+    251.1737509204935,
+    135.981489348936
+  ],
+  "target_bottom_mm": 97.84439781833913,
+  "target_top_mm": 174.11858087953286,
+  "target_lift_mm": 97.86531615658656,
+  "target_span_in_jaw_mm": 62.44462206563456,
+  "initial_open_gap_mm": 76.4455675264142,
+  "grasp_alignment_mm": 21.477560102771218,
+  "bilateral_target_contact": true,
+  "target_contact_sides": [
+    "left_fingerpad",
+    "right_fingerpad"
+  ],
+  "target_external_contacts": [],
+  "target_external_contact_count": 0,
+  "destination_top_mm": 141.4484513754475,
+  "destination_bounds_mm": [
+    [
+      -63.97648085228809,
+      168.67697524917295,
+      -0.014733444926223749
+    ],
+    [
+      93.36148280094334,
+      338.1962165807374,
+      141.4484513754475
+    ]
+  ],
+  "goal_center_mm": [
+    14.83509546981882,
+    252.46172328241872,
+    67.26682982688246
+  ],
+  "goal_distance_mm": 69.59497096424612,
+  "goal_xy_error_mm": 11.034289749798779,
+  "clearance_mm": -43.60405355710836,
+  "eef_mm": [
+    4.316478530460632,
+    251.5738554358394,
+    154.2098743038903
+  ],
+  "eef_rotation_matrix": [
+    [
+      -0.0010580196837196056,
+      0.9983998669537084,
+      -0.05653836096991447
+    ],
+    [
+      0.9999979843400562,
+      0.001152804741124943,
+      0.0016438847440320703
+    ],
+    [
+      0.0017064320003104053,
+      -0.05653650774538808,
+      -0.9983990742091973
+    ]
+  ],
+  "finger_gap_mm": 61.94404024371097,
+  "moving_contact": true,
+  "obstacle_contact": false,
+  "contact_modes": [
+    "fingerpad"
+  ],
+  "target_force_N": 39.99936106336414,
+  "obstacle_force_N": 0,
+  "distance_to_moving_geometry_mm": 0.0,
+  "contacts": [
+    {
+      "hand": "gripper0_finger1_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g13",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 9.928925746601843,
+      "position_mm": [
+        7.610989006090608,
+        220.09097696494533,
+        149.21029151845877
+      ]
+    },
+    {
+      "hand": "gripper0_finger1_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g13",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 10.071284145300993,
+      "position_mm": [
+        7.500429208039825,
+        220.06168063815775,
+        165.24215964464224
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g7",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 4.73025064976244,
+      "position_mm": [
+        10.28220803357313,
+        282.2506503043766,
+        165.1870808130558
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g7",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 4.842089217422848,
+      "position_mm": [
+        10.392767831623912,
+        282.2799466311642,
+        149.15521268687232
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g7",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 0.9735573790214551,
+      "position_mm": [
+        -3.54220376837871,
+        282.18513540136416,
+        157.17926574668084
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g7",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 1.0199212663871733,
+      "position_mm": [
+        -3.49228935246991,
+        282.1983618097482,
+        149.94136058084672
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g7",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 1.0652967161653368,
+      "position_mm": [
+        -3.0459975453017414,
+        282.172337391615,
+        165.94170073340393
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g21",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 3.630030601727828,
+      "position_mm": [
+        7.833326894618082,
+        282.229521225188,
+        165.3257195873141
+      ]
+    },
+    {
+      "hand": "gripper0_finger2_pad_collision",
+      "part": "fingerpad",
+      "other": "alphabet_soup_1_g21",
+      "moving_target": true,
+      "obstacle": false,
+      "normal_force_N": 3.73800534097423,
+      "position_mm": [
+        7.943886692668864,
+        282.25881755197565,
+        149.2938514611306
+      ]
+    }
+  ],
+  "success": true
+}

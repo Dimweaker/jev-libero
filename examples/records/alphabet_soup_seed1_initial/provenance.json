@@ -1,0 +1,9 @@
+{
+  "episode": "alphabet_soup_seed1",
+  "provider": "typesafe",
+  "cost_basis": "token-price estimate",
+  "task_config": "Measurement declarations migrated to unified interface; original contracts, prompts, calls and controls retained.",
+  "original_configuration": "original_task_config.json",
+  "original_source": "original_source.tar.gz",
+  "release_and_settle_verified": false
+}

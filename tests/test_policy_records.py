@@ -26,7 +26,15 @@ class RecordedAnswers:
 
 
 @pytest.mark.parametrize(
-    "name", ["microwave_seed1", "microwave_seed2", "microwave_seed3", "top_drawer_seed1"]
+    "name",
+    [
+        "microwave_seed1",
+        "microwave_seed2",
+        "microwave_seed3",
+        "top_drawer_seed1",
+        "alphabet_soup_seed1",
+        "alphabet_soup_seed1_initial",
+    ],
 )
 def test_all_recorded_requests_preserved(records_root, name):
     folder = records_root / name
@@ -61,13 +69,27 @@ def test_configuration_controls_eligibility(records_root):
 
 
 def test_recorded_costs_and_successes(records_root):
-    successes = []
+    successes = {}
     for folder in sorted(p for p in records_root.iterdir() if p.is_dir()):
         summary = json.loads((folder / "summary.json").read_text())
         calls = read_jsonl(folder / "api.jsonl")
-        assert sum(c["response"]["usage"]["cost"] for c in calls) == pytest.approx(
-            summary["cost_usd"]
-        )
+        if summary.get("cost_basis") == "token-price estimate":
+            estimates = read_jsonl(folder / "cost_estimates.jsonl")
+            cost = sum(c["estimated_cost_usd"] for c in estimates)
+            assert len(estimates) == len(calls)
+            assert cost == pytest.approx(
+                sum(c["response"]["usage"]["input_tokens"] for c in calls) * 0.042 / 1_000_000
+            )
+        else:
+            cost = sum(c["response"]["usage"]["cost"] for c in calls)
+        assert cost == pytest.approx(summary["cost_usd"])
         assert len(calls) == summary["api_calls"]
-        successes.append(summary["success"])
-    assert successes == [True, False, True, True]
+        successes[folder.name] = summary["success"]
+    assert successes == {
+        "microwave_seed1": True,
+        "microwave_seed2": False,
+        "microwave_seed3": True,
+        "top_drawer_seed1": True,
+        "alphabet_soup_seed1": True,
+        "alphabet_soup_seed1_initial": False,
+    }

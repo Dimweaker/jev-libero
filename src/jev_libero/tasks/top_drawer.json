@@ -315,5 +315,10 @@
     "label": "remaining",
     "unit": "mm",
     "progress_field": "closing_mm"
+  },
+  "measurements": {
+    "joint_position": {
+      "kind": "joint_position"
+    }
   }
 }

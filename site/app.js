@@ -86,6 +86,7 @@ async function loadEpisode(id) {
     const data = cache.get(id);
     state.data = data;
     $("episode-title").textContent = data.title;
+    $("episode-note").textContent = data.outcomeNote;
     $("duration").textContent = `${data.duration.toFixed(2)} s`;
     $("seek").max = data.duration;
     $("seek").value = 0;
@@ -98,6 +99,14 @@ async function loadEpisode(id) {
       .map(
         (step, index) =>
           `<button style="--duration:${step.end - step.start};--tint:${COLORS[step.intent]}" data-step="${index}" aria-label="Decision ${index + 1}: ${escape(label(step.intent))}, ${escape(label(step.choice))}" title="${pad(index + 1)} · ${escape(label(step.intent))} · ${escape(label(step.choice))}">${pad(index + 1)}</button>`,
+      )
+      .join("");
+    $("timeline-legend").innerHTML = [
+      ...new Set(data.steps.map((step) => step.intent)),
+    ]
+      .map(
+        (intent) =>
+          `<span><i style="background:${COLORS[intent]}"></i>${escape(label(intent))}</span>`,
       )
       .join("");
     $("action-grid").innerHTML = data.actions
@@ -329,7 +338,7 @@ function tick() {
   const complete = time >= state.data.duration - 0.001;
   $("outcome").textContent =
     complete && state.data.summary.success
-      ? "✓ SUCCESS"
+      ? "✓ LIBERO SUCCESS"
       : video.paused
         ? "PAUSED"
         : "PLAYING";

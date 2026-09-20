@@ -6,6 +6,17 @@ export const COLORS = {
   advance_target: "#ddf597",
   release_contact: "#f4d4b0",
   reposition: "#f4d4b0",
+  finish_task: "#ddf597",
+  align_gripper: "#d4c7ed",
+  orient_to_fit: "#d4c7ed",
+  open_for_grasp: "#efb3dc",
+  close_for_grasp: "#efb3dc",
+  secure_target: "#efb3dc",
+  lift_target: "#ddf597",
+  carry_target: "#bde5eb",
+  lower_into_goal: "#ddf597",
+  release_in_goal: "#f4d4b0",
+  release_obstruction: "#f4d4b0",
 };
 export const LAYER_COLORS = {
   intent: "#ddf597",

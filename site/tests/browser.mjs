@@ -87,7 +87,7 @@ try {
     true,
     "Reduced motion starts paused",
   );
-  for (const id of ["microwave", "top-drawer"]) {
+  for (const id of ["microwave", "top-drawer", "alphabet-soup"]) {
     if (id !== "microwave") await page.click(`[data-episode="${id}"]`);
     const data = JSON.parse(
       await readFile(resolve(root, "data", `${id}.json`), "utf8"),
@@ -99,6 +99,7 @@ try {
           "false",
       data.title,
     );
+    assert.equal(await page.textContent("#episode-note"), data.outcomeNote);
     assert.ok(
       Math.abs((await page.$eval("video", (v) => v.duration)) - data.duration) <
         0.06,
@@ -184,7 +185,7 @@ try {
   assert.deepEqual(errors, []);
   assert.deepEqual(failed, []);
   console.log(
-    "Browser checks passed: both episodes, all 34 decisions, end states, play/pause, layer inspector, speed, projection, and mobile layout.",
+    "Browser checks passed: three episodes, all 74 decisions, end states, outcome notes, play/pause, layer inspector, speed, projection, and mobile layout.",
   );
 } finally {
   await browser.close();

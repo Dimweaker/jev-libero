@@ -21,7 +21,7 @@ const lines = (path) =>
     .split("\n")
     .map(JSON.parse);
 
-for (const id of ["microwave", "top-drawer"]) {
+for (const id of ["microwave", "top-drawer", "alphabet-soup"]) {
   const data = read(`_site/data/${id}.json`);
   test(`${id}: complete, contiguous simulation-time coverage`, () => {
     assert.equal(data.steps.length, data.summary.decisions);

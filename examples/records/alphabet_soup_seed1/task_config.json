@@ -1,0 +1,1248 @@
+{
+  "schema_version": 1,
+  "name": "alphabet_soup_pick_place_pilot",
+  "binding": {
+    "suite": "libero_object",
+    "task": "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "object": "alphabet_soup_1",
+    "joint_suffix": null,
+    "success": "libero"
+  },
+  "contact": {
+    "min_normal_force_N": 0.05,
+    "allowed_other_geoms": [],
+    "parts": [
+      {
+        "contains": "pad",
+        "name": "fingerpad"
+      },
+      {
+        "contains": "finger",
+        "name": "finger"
+      }
+    ],
+    "default_part": "palm",
+    "reject_new_obstacles": true,
+    "require_obstacle_free_endpoint": true,
+    "release_priority": [
+      "blocked"
+    ]
+  },
+  "features": {
+    "jaw_center_mm": {
+      "ref": "raw.jaw_center_mm"
+    },
+    "jaw_axis": {
+      "ref": "raw.jaw_axis"
+    },
+    "target_center_mm": {
+      "ref": "raw.target_center_mm"
+    },
+    "target_bottom_mm": {
+      "ref": "raw.target_bottom_mm"
+    },
+    "target_top_mm": {
+      "ref": "raw.target_top_mm"
+    },
+    "target_lift_mm": {
+      "ref": "raw.target_lift_mm"
+    },
+    "target_span_in_jaw_mm": {
+      "ref": "raw.target_span_in_jaw_mm"
+    },
+    "initial_open_gap_mm": {
+      "ref": "raw.initial_open_gap_mm"
+    },
+    "grasp_alignment_mm": {
+      "ref": "raw.grasp_alignment_mm"
+    },
+    "bilateral_target_contact": {
+      "ref": "raw.bilateral_target_contact"
+    },
+    "target_contact_sides": {
+      "ref": "raw.target_contact_sides"
+    },
+    "target_external_contacts": {
+      "ref": "raw.target_external_contacts"
+    },
+    "target_external_contact_count": {
+      "ref": "raw.target_external_contact_count"
+    },
+    "destination_top_mm": {
+      "ref": "raw.destination_top_mm"
+    },
+    "destination_bounds_mm": {
+      "ref": "raw.destination_bounds_mm"
+    },
+    "goal_center_mm": {
+      "mul": [
+        {
+          "ref": "raw.site_positions.goal"
+        },
+        1000
+      ]
+    },
+    "goal_distance_mm": {
+      "norm": {
+        "sub": [
+          {
+            "ref": "raw.target_center_mm"
+          },
+          {
+            "mul": [
+              {
+                "ref": "raw.site_positions.goal"
+              },
+              1000
+            ]
+          }
+        ]
+      }
+    },
+    "goal_xy_error_mm": {
+      "norm": [
+        {
+          "index": [
+            {
+              "sub": [
+                {
+                  "ref": "raw.target_center_mm"
+                },
+                {
+                  "mul": [
+                    {
+                      "ref": "raw.site_positions.goal"
+                    },
+                    1000
+                  ]
+                }
+              ]
+            },
+            0
+          ]
+        },
+        {
+          "index": [
+            {
+              "sub": [
+                {
+                  "ref": "raw.target_center_mm"
+                },
+                {
+                  "mul": [
+                    {
+                      "ref": "raw.site_positions.goal"
+                    },
+                    1000
+                  ]
+                }
+              ]
+            },
+            1
+          ]
+        }
+      ]
+    },
+    "clearance_mm": {
+      "sub": [
+        {
+          "ref": "raw.target_bottom_mm"
+        },
+        {
+          "ref": "raw.destination_top_mm"
+        }
+      ]
+    }
+  },
+  "predictions": {
+    "delivery_progress_mm": {
+      "sub": [
+        {
+          "ref": "before.goal_distance_mm"
+        },
+        {
+          "ref": "after.goal_distance_mm"
+        }
+      ]
+    },
+    "alignment_gain_mm": {
+      "sub": [
+        {
+          "ref": "before.grasp_alignment_mm"
+        },
+        {
+          "ref": "after.grasp_alignment_mm"
+        }
+      ]
+    },
+    "height_gain_mm": {
+      "sub": [
+        {
+          "ref": "after.target_bottom_mm"
+        },
+        {
+          "ref": "before.target_bottom_mm"
+        }
+      ]
+    },
+    "xy_gain_mm": {
+      "sub": [
+        {
+          "ref": "before.goal_xy_error_mm"
+        },
+        {
+          "ref": "after.goal_xy_error_mm"
+        }
+      ]
+    },
+    "width_reduction_mm": {
+      "sub": [
+        {
+          "ref": "before.target_span_in_jaw_mm"
+        },
+        {
+          "ref": "after.target_span_in_jaw_mm"
+        }
+      ]
+    },
+    "target_displacement_mm": {
+      "norm": {
+        "sub": [
+          {
+            "ref": "after.target_center_mm"
+          },
+          {
+            "ref": "before.target_center_mm"
+          }
+        ]
+      }
+    }
+  },
+  "thresholds": {
+    "ordinary": {
+      "progress": 2.0,
+      "alignment_tolerance_mm": 10.0,
+      "jaw_margin_mm": 2.0,
+      "clearance_mm": 10.0,
+      "goal_xy_mm": 15.0,
+      "max_approach_push_mm": 5.0
+    },
+    "collision_aware": {
+      "progress": 2.0,
+      "alignment_tolerance_mm": 10.0,
+      "jaw_margin_mm": 2.0,
+      "clearance_mm": 10.0,
+      "goal_xy_mm": 15.0,
+      "max_approach_push_mm": 5.0
+    }
+  },
+  "contracts": {
+    "finish_task": {
+      "ref": "after.success"
+    },
+    "align_gripper": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.bilateral_target_contact"
+          }
+        },
+        {
+          "le": [
+            {
+              "ref": "after.target_span_in_jaw_mm"
+            },
+            {
+              "sub": [
+                {
+                  "ref": "after.initial_open_gap_mm"
+                },
+                {
+                  "ref": "thresholds.jaw_margin_mm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "after.finger_gap_mm"
+            },
+            {
+              "add": [
+                {
+                  "ref": "after.target_span_in_jaw_mm"
+                },
+                {
+                  "ref": "thresholds.jaw_margin_mm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.target_displacement_mm"
+            },
+            {
+              "ref": "thresholds.max_approach_push_mm"
+            }
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.alignment_gain_mm"
+            },
+            {
+              "ref": "thresholds.progress"
+            }
+          ]
+        }
+      ]
+    },
+    "orient_to_fit": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.bilateral_target_contact"
+          }
+        },
+        {
+          "gt": [
+            {
+              "ref": "before.target_span_in_jaw_mm"
+            },
+            {
+              "sub": [
+                {
+                  "ref": "before.initial_open_gap_mm"
+                },
+                {
+                  "ref": "thresholds.jaw_margin_mm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.target_displacement_mm"
+            },
+            {
+              "ref": "thresholds.max_approach_push_mm"
+            }
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.width_reduction_mm"
+            },
+            1.0
+          ]
+        }
+      ]
+    },
+    "open_for_grasp": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.bilateral_target_contact"
+          }
+        },
+        {
+          "lt": [
+            {
+              "ref": "before.finger_gap_mm"
+            },
+            {
+              "add": [
+                {
+                  "ref": "before.target_span_in_jaw_mm"
+                },
+                {
+                  "ref": "thresholds.jaw_margin_mm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.gap_change_mm"
+            },
+            2.0
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.target_displacement_mm"
+            },
+            {
+              "ref": "thresholds.max_approach_push_mm"
+            }
+          ]
+        }
+      ]
+    },
+    "close_for_grasp": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.bilateral_target_contact"
+          }
+        },
+        {
+          "le": [
+            {
+              "ref": "before.grasp_alignment_mm"
+            },
+            {
+              "ref": "thresholds.alignment_tolerance_mm"
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "after.target_span_in_jaw_mm"
+            },
+            {
+              "sub": [
+                {
+                  "ref": "after.initial_open_gap_mm"
+                },
+                {
+                  "ref": "thresholds.jaw_margin_mm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.target_displacement_mm"
+            },
+            {
+              "ref": "thresholds.max_approach_push_mm"
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.gap_change_mm"
+            },
+            -2.0
+          ]
+        }
+      ]
+    },
+    "secure_target": {
+      "all": [
+        {
+          "not": {
+            "ref": "before.bilateral_target_contact"
+          }
+        },
+        {
+          "ref": "after.bilateral_target_contact"
+        },
+        {
+          "le": [
+            {
+              "ref": "p.target_displacement_mm"
+            },
+            {
+              "ref": "thresholds.max_approach_push_mm"
+            }
+          ]
+        }
+      ]
+    },
+    "lift_target": {
+      "all": [
+        {
+          "ref": "before.bilateral_target_contact"
+        },
+        {
+          "ref": "after.bilateral_target_contact"
+        },
+        {
+          "not": {
+            "le": [
+              {
+                "ref": "before.goal_xy_error_mm"
+              },
+              {
+                "ref": "thresholds.goal_xy_mm"
+              }
+            ]
+          }
+        },
+        {
+          "not": {
+            "ge": [
+              {
+                "ref": "before.clearance_mm"
+              },
+              {
+                "ref": "thresholds.clearance_mm"
+              }
+            ]
+          }
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.height_gain_mm"
+            },
+            {
+              "ref": "thresholds.progress"
+            }
+          ]
+        }
+      ]
+    },
+    "carry_target": {
+      "all": [
+        {
+          "ref": "before.bilateral_target_contact"
+        },
+        {
+          "ref": "after.bilateral_target_contact"
+        },
+        {
+          "ge": [
+            {
+              "ref": "before.clearance_mm"
+            },
+            {
+              "ref": "thresholds.clearance_mm"
+            }
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "after.clearance_mm"
+            },
+            {
+              "ref": "thresholds.clearance_mm"
+            }
+          ]
+        },
+        {
+          "eq": [
+            {
+              "ref": "after.target_external_contact_count"
+            },
+            0
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.xy_gain_mm"
+            },
+            {
+              "ref": "thresholds.progress"
+            }
+          ]
+        }
+      ]
+    },
+    "lower_into_goal": {
+      "all": [
+        {
+          "ref": "before.bilateral_target_contact"
+        },
+        {
+          "ref": "after.bilateral_target_contact"
+        },
+        {
+          "le": [
+            {
+              "ref": "before.goal_xy_error_mm"
+            },
+            {
+              "ref": "thresholds.goal_xy_mm"
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "after.goal_xy_error_mm"
+            },
+            {
+              "ref": "thresholds.goal_xy_mm"
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "p.height_gain_mm"
+            },
+            -2.0
+          ]
+        },
+        {
+          "ge": [
+            {
+              "ref": "p.delivery_progress_mm"
+            },
+            2.0
+          ]
+        }
+      ]
+    },
+    "release_in_goal": {
+      "all": [
+        {
+          "ref": "before.bilateral_target_contact"
+        },
+        {
+          "le": [
+            {
+              "ref": "before.goal_xy_error_mm"
+            },
+            {
+              "ref": "thresholds.goal_xy_mm"
+            }
+          ]
+        },
+        {
+          "le": [
+            {
+              "ref": "after.goal_xy_error_mm"
+            },
+            {
+              "ref": "thresholds.goal_xy_mm"
+            }
+          ]
+        },
+        {
+          "not": {
+            "ref": "after.bilateral_target_contact"
+          }
+        },
+        {
+          "any": [
+            {
+              "ref": "after.success"
+            },
+            {
+              "ge": [
+                {
+                  "ref": "p.delivery_progress_mm"
+                },
+                2.0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "release_obstruction": {
+      "all": [
+        {
+          "ref": "released_required_contacts"
+        },
+        {
+          "any": [
+            {
+              "not": {
+                "ref": "before.bilateral_target_contact"
+              }
+            },
+            {
+              "ref": "after.bilateral_target_contact"
+            }
+          ]
+        }
+      ]
+    },
+    "reposition": {
+      "ref": "has_reposition_witness"
+    }
+  },
+  "policy": {
+    "intent_descriptions": {
+      "finish_task": "Satisfy the original LIBERO basket-containment goal.",
+      "align_gripper": "Move the open fingerpad midpoint toward the target collision-shape center while the object fits the jaw opening. Limit ungrasped object pushing.",
+      "orient_to_fit": "Reduce target width along the jaw-closing axis when it exceeds available opening.",
+      "open_for_grasp": "Increase an insufficient jaw opening for the target width.",
+      "close_for_grasp": "Reduce the jaw opening around an already aligned object.",
+      "secure_target": "Establish simultaneous left AND right fingerpad contact. Lifting will test whether it is actually carried.",
+      "lift_target": "Raise the held object until its bottom clears the basket rim; preserve bilateral pad contact.",
+      "carry_target": "Reduce object-to-basket horizontal error while keeping the held object clear of the rim and external contacts.",
+      "lower_into_goal": "Lower the held object over the basket center, reducing distance to its containment region.",
+      "release_in_goal": "Release the object over the basket with predicted progress into the containment region.",
+      "release_obstruction": "Remove currently obstructing gripper contacts, preserving any two-sided grip.",
+      "reposition": "First input with a safe two-step witness to a net physical effect. The next input is reselected after observation."
+    },
+    "motor_instructions": "Choose one input for the selected objective. Prefer larger useful measured improvement: jaw-center alignment for align_gripper, sufficient aperture for open_for_grasp, bilateral contact for securing, object height for lift, horizontal goal progress for carry, and distance reduction for lowering. Preserve the held object during lift/transport. For reposition compare the two-step witness. Only the selected input executes.",
+    "intent_instructions": "Choose a feasible physical objective for picking up the target and placing it in the basket. Prefer task completion. A two-sided grip enables lifting; clearing the basket rim enables transport. An aligned open jaw enables closing. Prefer preserving a useful grip over releasing it away from the destination. Compare the measured state and candidate effects.",
+    "strategy_instructions": "Choose a contact/motion family that best realizes the selected objective. Compare target alignment, two-sided fingerpad contact, object lift, and distance to the basket. Every option describes a simulated short input.",
+    "task_text": "Pick up the alphabet soup and place it in the basket.",
+    "review_interval": 6,
+    "review_when_available": [
+      "finish_task",
+      "secure_target",
+      "carry_target",
+      "lower_into_goal",
+      "release_in_goal"
+    ],
+    "review_transitions": {
+      "align_gripper": [
+        "close_for_grasp"
+      ],
+      "close_for_grasp": [
+        "lift_target"
+      ],
+      "secure_target": [
+        "lift_target"
+      ]
+    },
+    "review_if_finish_elsewhere": true,
+    "prediction_scope": "Each primitive was simulated for up to 8 environment steps (0.4s). Reposition candidates additionally have a verified two-primitive witness. Only one selected primitive executes.",
+    "intent_state": {
+      "grasp_alignment_mm": {
+        "round": [
+          {
+            "ref": "before.grasp_alignment_mm"
+          },
+          2
+        ]
+      },
+      "finger_gap_mm": {
+        "round": [
+          {
+            "ref": "before.finger_gap_mm"
+          },
+          2
+        ]
+      },
+      "target_span_in_jaw_mm": {
+        "round": [
+          {
+            "ref": "before.target_span_in_jaw_mm"
+          },
+          2
+        ]
+      },
+      "target_lift_mm": {
+        "round": [
+          {
+            "ref": "before.target_lift_mm"
+          },
+          2
+        ]
+      },
+      "clearance_mm": {
+        "round": [
+          {
+            "ref": "before.clearance_mm"
+          },
+          2
+        ]
+      },
+      "goal_xy_error_mm": {
+        "round": [
+          {
+            "ref": "before.goal_xy_error_mm"
+          },
+          2
+        ]
+      },
+      "goal_distance_mm": {
+        "round": [
+          {
+            "ref": "before.goal_distance_mm"
+          },
+          2
+        ]
+      },
+      "bilateral_fingerpad_contact": {
+        "ref": "before.bilateral_target_contact"
+      },
+      "external_target_contacts": {
+        "ref": "before.target_external_contact_count"
+      }
+    },
+    "strategy_state": {
+      "grasp_alignment_mm": {
+        "round": [
+          {
+            "ref": "before.grasp_alignment_mm"
+          },
+          2
+        ]
+      },
+      "finger_gap_mm": {
+        "round": [
+          {
+            "ref": "before.finger_gap_mm"
+          },
+          2
+        ]
+      },
+      "target_span_in_jaw_mm": {
+        "round": [
+          {
+            "ref": "before.target_span_in_jaw_mm"
+          },
+          2
+        ]
+      },
+      "target_lift_mm": {
+        "round": [
+          {
+            "ref": "before.target_lift_mm"
+          },
+          2
+        ]
+      },
+      "clearance_mm": {
+        "round": [
+          {
+            "ref": "before.clearance_mm"
+          },
+          2
+        ]
+      },
+      "goal_xy_error_mm": {
+        "round": [
+          {
+            "ref": "before.goal_xy_error_mm"
+          },
+          2
+        ]
+      },
+      "goal_distance_mm": {
+        "round": [
+          {
+            "ref": "before.goal_distance_mm"
+          },
+          2
+        ]
+      },
+      "bilateral_fingerpad_contact": {
+        "ref": "before.bilateral_target_contact"
+      },
+      "external_target_contacts": {
+        "ref": "before.target_external_contact_count"
+      }
+    },
+    "motor_options": {
+      "target_alignment_mm": {
+        "round": [
+          {
+            "ref": "after.grasp_alignment_mm"
+          },
+          2
+        ]
+      },
+      "alignment_gain_mm": {
+        "round": [
+          {
+            "ref": "p.alignment_gain_mm"
+          },
+          2
+        ]
+      },
+      "jaw_gap_mm": {
+        "round": [
+          {
+            "ref": "after.finger_gap_mm"
+          },
+          2
+        ]
+      },
+      "target_width_in_jaw_mm": {
+        "round": [
+          {
+            "ref": "after.target_span_in_jaw_mm"
+          },
+          2
+        ]
+      },
+      "bilateral_fingerpad_contact": {
+        "ref": "after.bilateral_target_contact"
+      },
+      "target_lift_mm": {
+        "round": [
+          {
+            "ref": "after.target_lift_mm"
+          },
+          2
+        ]
+      },
+      "height_gain_mm": {
+        "round": [
+          {
+            "ref": "p.height_gain_mm"
+          },
+          2
+        ]
+      },
+      "basket_rim_clearance_mm": {
+        "round": [
+          {
+            "ref": "after.clearance_mm"
+          },
+          2
+        ]
+      },
+      "goal_xy_error_mm": {
+        "round": [
+          {
+            "ref": "after.goal_xy_error_mm"
+          },
+          2
+        ]
+      },
+      "goal_distance_mm": {
+        "round": [
+          {
+            "ref": "after.goal_distance_mm"
+          },
+          2
+        ]
+      },
+      "external_target_contacts": {
+        "ref": "after.target_external_contact_count"
+      },
+      "task_complete": {
+        "ref": "after.success"
+      }
+    },
+    "feedback": {
+      "bilateral_fingerpad_contact": {
+        "ref": "after.bilateral_target_contact"
+      },
+      "target_lift_mm": {
+        "round": [
+          {
+            "ref": "after.target_lift_mm"
+          },
+          2
+        ]
+      },
+      "alignment_mm": {
+        "round": [
+          {
+            "ref": "after.grasp_alignment_mm"
+          },
+          2
+        ]
+      },
+      "goal_distance_mm": {
+        "round": [
+          {
+            "ref": "after.goal_distance_mm"
+          },
+          2
+        ]
+      },
+      "external_target_contacts": {
+        "ref": "after.target_external_contact_count"
+      },
+      "success": {
+        "ref": "after.success"
+      }
+    },
+    "summary": {
+      "can_finish_task": {
+        "field": "after.success",
+        "reduce": "any"
+      },
+      "can_establish_two_sided_contact": {
+        "field": "after.bilateral_target_contact",
+        "reduce": "any"
+      },
+      "alignment_gain_mm_range": {
+        "field": "alignment_gain_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "height_gain_mm_range": {
+        "field": "height_gain_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "xy_gain_mm_range": {
+        "field": "xy_gain_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "goal_distance_mm_range": {
+        "field": "after.goal_distance_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "target_lift_mm_range": {
+        "field": "after.target_lift_mm",
+        "reduce": "range",
+        "digits": 2
+      },
+      "jaw_gap_mm_range": {
+        "field": "after.finger_gap_mm",
+        "reduce": "range",
+        "digits": 2
+      }
+    }
+  },
+  "search": {
+    "progress_field": "delivery_progress_mm",
+    "score": [
+      {
+        "ref": "after.success"
+      },
+      {
+        "ref": "effects.secure_target"
+      },
+      {
+        "ref": "effects.carry_target"
+      },
+      {
+        "ref": "effects.lift_target"
+      },
+      {
+        "ref": "p.delivery_progress_mm"
+      },
+      {
+        "ref": "p.alignment_gain_mm"
+      }
+    ]
+  },
+  "display": {
+    "field": "goal_distance_mm",
+    "label": "goal_distance",
+    "unit": "mm",
+    "progress_field": "delivery_progress_mm"
+  },
+  "measurements": {
+    "jaw_center_mm": {
+      "kind": "pair_center_mm",
+      "left": {
+        "group": "left_fingerpad"
+      },
+      "right": {
+        "group": "right_fingerpad"
+      }
+    },
+    "jaw_axis": {
+      "kind": "axis",
+      "left": {
+        "group": "left_fingerpad"
+      },
+      "right": {
+        "group": "right_fingerpad"
+      }
+    },
+    "target_bounds_mm": {
+      "kind": "bounds_mm",
+      "entity": {
+        "group": "target"
+      }
+    },
+    "target_center_mm": {
+      "kind": "center_mm",
+      "entity": {
+        "group": "target"
+      }
+    },
+    "target_bottom_mm": {
+      "kind": "expression",
+      "value": {
+        "index": [
+          {
+            "index": [
+              {
+                "ref": "raw.target_bounds_mm"
+              },
+              0
+            ]
+          },
+          2
+        ]
+      }
+    },
+    "target_top_mm": {
+      "kind": "expression",
+      "value": {
+        "index": [
+          {
+            "index": [
+              {
+                "ref": "raw.target_bounds_mm"
+              },
+              1
+            ]
+          },
+          2
+        ]
+      }
+    },
+    "initial_bottom_mm": {
+      "kind": "initial",
+      "source": "target_bottom_mm"
+    },
+    "target_lift_mm": {
+      "kind": "expression",
+      "value": {
+        "sub": [
+          {
+            "ref": "raw.target_bottom_mm"
+          },
+          {
+            "ref": "raw.initial_bottom_mm"
+          }
+        ]
+      }
+    },
+    "target_span_in_jaw_mm": {
+      "kind": "span_mm",
+      "entity": {
+        "group": "target"
+      },
+      "axis": "jaw_axis"
+    },
+    "jaw_gap_mm": {
+      "kind": "gap_mm",
+      "left": {
+        "group": "left_fingerpad"
+      },
+      "right": {
+        "group": "right_fingerpad"
+      }
+    },
+    "initial_open_gap_mm": {
+      "kind": "initial",
+      "source": "jaw_gap_mm"
+    },
+    "grasp_alignment_mm": {
+      "kind": "expression",
+      "value": {
+        "norm": {
+          "sub": [
+            {
+              "ref": "raw.target_center_mm"
+            },
+            {
+              "ref": "raw.jaw_center_mm"
+            }
+          ]
+        }
+      }
+    },
+    "target_contact_sides": {
+      "kind": "contact_groups",
+      "entity": {
+        "group": "target"
+      },
+      "groups": {
+        "left_fingerpad": {
+          "group": "left_fingerpad"
+        },
+        "right_fingerpad": {
+          "group": "right_fingerpad"
+        }
+      }
+    },
+    "bilateral_target_contact": {
+      "kind": "expression",
+      "value": {
+        "eq": [
+          {
+            "count": {
+              "ref": "raw.target_contact_sides"
+            }
+          },
+          2
+        ]
+      }
+    },
+    "target_external_contacts": {
+      "kind": "external_contacts",
+      "entity": {
+        "group": "target"
+      },
+      "exclude": [
+        {
+          "group": "gripper"
+        }
+      ]
+    },
+    "target_external_contact_count": {
+      "kind": "expression",
+      "value": {
+        "count": {
+          "ref": "raw.target_external_contacts"
+        }
+      }
+    },
+    "destination_bounds_mm": {
+      "kind": "bounds_mm",
+      "entity": {
+        "object": "basket_1"
+      }
+    },
+    "destination_top_mm": {
+      "kind": "expression",
+      "value": {
+        "index": [
+          {
+            "index": [
+              {
+                "ref": "raw.destination_bounds_mm"
+              },
+              1
+            ]
+          },
+          2
+        ]
+      }
+    },
+    "site_positions": {
+      "kind": "positions",
+      "entity": "site",
+      "names": {
+        "goal": "basket_1_contain_region"
+      }
+    }
+  },
+  "record_features": [
+    "jaw_center_mm",
+    "jaw_axis",
+    "target_center_mm",
+    "target_bottom_mm",
+    "target_top_mm",
+    "target_lift_mm",
+    "target_span_in_jaw_mm",
+    "initial_open_gap_mm",
+    "grasp_alignment_mm",
+    "bilateral_target_contact",
+    "target_contact_sides",
+    "target_external_contacts",
+    "target_external_contact_count",
+    "destination_top_mm",
+    "destination_bounds_mm",
+    "goal_center_mm",
+    "goal_distance_mm",
+    "goal_xy_error_mm",
+    "clearance_mm",
+    "finger_gap_mm",
+    "success"
+  ]
+}

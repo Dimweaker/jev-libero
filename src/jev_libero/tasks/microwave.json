@@ -315,5 +315,10 @@
     "label": "open",
     "unit": "deg",
     "progress_field": "closing_degrees"
+  },
+  "measurements": {
+    "joint_position": {
+      "kind": "joint_position"
+    }
   }
 }

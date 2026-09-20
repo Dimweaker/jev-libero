@@ -112,12 +112,6 @@ class World:
             self.scene.moving = self.scene.geoms
         if binding["success"] != "libero":
             raise ValueError("Only the original LIBERO success predicate is supported")
-        self.body_sensors = {
-            key: self.env.sim.model.body_name2id(name) for key, name in binding["bodies"].items()
-        }
-        self.site_sensors = {
-            key: self.env.sim.model.site_name2id(name) for key, name in binding["sites"].items()
-        }
         self.gripper_geoms = [
             i
             for i in range(self.model.ngeom)
@@ -126,6 +120,9 @@ class World:
         ]
         self.qindex = int(self.model.jnt_qposadr[self.jid]) if self.jid is not None else None
         self.geometry_gap = GeometryGap(self.model, self.gripper_geoms, self.scene.moving)
+        from .measurements import Measurements
+
+        self.measurements = Measurements(self)
 
     def features(self):
         contacts = []
@@ -169,15 +166,7 @@ class World:
         gap = max(0.0, float((right @ axis).min() - (left @ axis).max())) * 1000
         target = [c for c in contacts if c["moving_target"]]
         obstacles = [c for c in contacts if c["obstacle"]]
-        raw = {
-            "joint_position": float(self.data.qpos[self.qindex])
-            if self.qindex is not None
-            else None,
-            "body_positions": {k: self.data.xpos[v].tolist() for k, v in self.body_sensors.items()},
-            "site_positions": {
-                k: self.data.site_xpos[v].tolist() for k, v in self.site_sensors.items()
-            },
-        }
+        raw = self.measurements.read()
         return {
             **project(self.config["features"], {"raw": raw}),
             "eef_mm": (self.obs["robot0_eef_pos"] * 1000).tolist(),
@@ -208,6 +197,7 @@ class World:
         commands = []
         states = []
         frames = []
+        feature_trace = []
         peak_obstacle = 0.0
         obstacle_pairs = set()
         for k in range(8):
@@ -221,6 +211,13 @@ class World:
             commands.append(a.copy())
             self.obs, _, _, _ = self.env.step(a)
             features = self.features()
+            if record and self.config.get("record_features"):
+                feature_trace.append(
+                    {
+                        "sim_time_s": float(self.data.time),
+                        **{key: features[key] for key in self.config["record_features"]},
+                    }
+                )
             peak_obstacle = max(peak_obstacle, features["obstacle_force_N"])
             obstacle_pairs.update(
                 (c["hand"], c["other"]) for c in features["contacts"] if c["obstacle"]
@@ -238,6 +235,7 @@ class World:
             "commands": commands,
             "states": states,
             "frames": frames,
+            "feature_trace": feature_trace,
             "peak_obstacle_force_N": peak_obstacle,
             "obstacle_pairs_seen": sorted(obstacle_pairs),
         }

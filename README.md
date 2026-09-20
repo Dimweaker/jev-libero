@@ -23,16 +23,18 @@
 <td align="center"><a href="docs/media/top-drawer.mp4"><img src="docs/media/top-drawer.gif" width="360" alt="Recorded Jev-controlled top-drawer closure" /></a></td>
 </tr>
 <tr><td align="center">14 decisions · 111 environment steps<br/><a href="docs/media/microwave.mp4">MP4</a> · <a href="examples/records/microwave_seed1">Full record</a></td><td align="center">20 decisions · 155 environment steps<br/><a href="docs/media/top-drawer.mp4">MP4</a> · <a href="examples/records/top_drawer_seed1">Full record</a></td></tr>
+<tr><th colspan="2">Grasp and lower alphabet soup into the basket</th></tr>
+<tr><td colspan="2" align="center"><a href="docs/media/alphabet-soup.mp4"><img src="docs/media/alphabet-soup.gif" width="360" alt="Jev grasps a soup can, lifts it, and lowers it into the basket while retaining its grip" /></a><br/>40 decisions · 314 environment steps<br/><a href="docs/media/alphabet-soup.mp4">MP4</a> · <a href="examples/records/alphabet_soup_seed1">Full record</a></td></tr>
 </table>
 
-Two LIBERO tasks, one control engine. Each demo loads its own JSON task definition. Videos follow simulation time, with decision and physics-preview waiting omitted.
+Three LIBERO task configurations share one control engine. Videos follow simulation time, with decision and physics-preview waiting omitted. The grasp example passes LIBERO's containment criterion; the final frame still shows a held object, not a released and settled placement.
 
 ## Features
 
 - **Fine-grained control.** 27 inputs covering Cartesian translations, wrist rotations, gripper open/close, and hold.
 - **Layered decisions.** Jev selects an intent, a contact/motion family, and an input, with each choice informing the next.
 - **Local physics previews.** Reversible simulator branches evaluate candidate effects before execution.
-- **Configurable tasks.** Define objects, progress measures, contact rules, goals, and decision prompts in JSON.
+- **Configurable tasks.** Select measurements, exported features, contact rules, goals, and per-layer Jev inputs in JSON through one shared interface.
 - **Inspectable runs.** Save model requests, predictions, controls, simulator states, costs, and trajectory media together.
 
 ## Quick start
@@ -118,7 +120,14 @@ jev-libero validate-task my-task.json
 jev-libero run --provider typesafe --task my-task.json --out runs/custom
 ```
 
-[`microwave.json`](src/jev_libero/tasks/microwave.json) and [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json) show how to connect LIBERO objects and joints to progress measures and decision criteria. The current engine provides a single-target Panda/OSC interface; the [configuration guide](docs/tasks.md) covers available measurements, expressions, and extension points.
+[`microwave.json`](src/jev_libero/tasks/microwave.json), [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json), and [`alphabet_soup.json`](src/jev_libero/tasks/alphabet_soup.json) use the same measurement interface. `measurements` selects what to compute, `features` selects what to expose, and `policy` selects what each Jev layer receives; `record_features` selects per-step logging. No task-specific executor is needed. See the [configuration guide](docs/tasks.md).
+
+Run the grasp task with:
+
+```bash
+jev-libero run --provider typesafe --task alphabet_soup --seed 1 \
+  --out runs/soup-s1 --max-decisions 60 --budget-usd 0.03
+```
 
 ## How it works
 
@@ -141,14 +150,15 @@ Jev chooses among those candidates. If a useful move needs repositioning first, 
 
 ## Recorded results
 
-One successful example from each bundled task:
+One recorded example passing the original LIBERO criterion per bundled task:
 
 | Task | Seed | Outcome | Decisions | Env steps | API cost |
 |---|---:|:---:|---:|---:|---:|
 | Microwave | 1 | ✅ | 14 | 111 | $0.001249 |
 | Top drawer | 1 | ✅ | 20 | 155 | $0.001418 |
+| Alphabet soup | 1 | ✅ containment; still held | 40 | 314 | ~$0.003023 |
 
-Both use saved initial-state index 0 and OpenRouter. Costs cover model calls. [Run records and analysis →](docs/results.md)
+All use saved initial-state index 0. Microwave and drawer use OpenRouter; soup uses TypeSafe, with cost estimated from input-token pricing. Costs cover model calls. [Run records and analysis →](docs/results.md)
 
 ### Replay a recording
 

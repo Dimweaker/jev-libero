@@ -147,6 +147,16 @@ def run(
             executed = world.execute(choice, grip, record=True)
             grip = executed["grip"]
             after = executed["features"]
+            for frame_index, measurement in enumerate(executed["feature_trace"]):
+                append_json(
+                    out / "measurements.jsonl",
+                    {
+                        "decision": step,
+                        "frame_in_action": frame_index,
+                        "input": choice,
+                        "features": measurement,
+                    },
+                )
             states.extend(executed["states"])
             commands.extend(executed["commands"])
             frames.extend(Image.fromarray(frame) for frame in executed["frames"])

@@ -1,0 +1,18 @@
+{
+  "success": false,
+  "termination": "decision_limit",
+  "decisions": 60,
+  "sim_steps": 480,
+  "api_calls": 120,
+  "intent_calls": 30,
+  "strategy_calls": 30,
+  "cost_usd": 0.005692344000000003,
+  "provider": "typesafe",
+  "cost_basis": "token-price estimate",
+  "initial_state": 0,
+  "seed": 1,
+  "task_config_name": "alphabet_soup_pick_place_pilot",
+  "final_task_value": 107.73879699667286,
+  "task_value_unit": "mm",
+  "error": null
+}

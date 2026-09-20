@@ -279,7 +279,15 @@
   }
   .scene-tabs {
     display: flex;
+    flex-wrap: wrap;
     align-self: stretch;
+  }
+  .episode-note {
+    margin: 0;
+    padding: 0 20px 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
   }
   .scene-tabs button {
     background: transparent;

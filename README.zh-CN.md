@@ -16,16 +16,18 @@
 <tr><th>关闭微波炉</th><th>关闭顶层抽屉</th></tr>
 <tr><td><a href="docs/media/microwave.mp4"><img src="docs/media/microwave.gif" width="360" alt="微波炉仿真轨迹" /></a></td><td><a href="docs/media/top-drawer.mp4"><img src="docs/media/top-drawer.gif" width="360" alt="抽屉仿真轨迹" /></a></td></tr>
 <tr><td>14 次原子决策 · 111 环境步</td><td>20 次原子决策 · 155 环境步</td></tr>
+<tr><th colspan="2">抓起 alphabet soup 并下放到篮子中</th></tr>
+<tr><td colspan="2" align="center"><a href="docs/media/alphabet-soup.mp4"><img src="docs/media/alphabet-soup.gif" width="360" alt="夹起汤罐、抬升并下放到篮子，结束时仍保持夹持" /></a><br/>40 次原子决策 · 314 环境步<br/><a href="docs/media/alphabet-soup.mp4">MP4</a> · <a href="examples/records/alphabet_soup_seed1">完整记录</a></td></tr>
 </table>
 
-两个 LIBERO 任务共用同一控制引擎，各自加载 JSON 任务配置。视频按仿真时间播放，省略决策和物理前视的等待。
+三个 LIBERO 任务配置共用同一控制引擎。视频按仿真时间播放，省略决策和物理前视的等待。抓取案例通过了 LIBERO 的容纳判定，但结束时仍夹持物体，尚未展示松手落稳。
 
 ## 功能
 
 - **精细控制**：27 个输入，涵盖平移、旋转、开爪、合爪和保持。
 - **分层决策**：Jev 依次选择意图、接触/运动方式和具体输入，每层选择传递给下一层。
 - **物理前视**：在可恢复的仿真分支中预测候选动作的效果。
-- **任务配置**：通过 JSON 定义对象、进展指标、接触规则、目标和决策提示。
+- **任务配置**：通过统一接口，由 JSON 选择测量项、输出字段、接触规则、目标及各层 Jev 接收的内容。
 - **运行记录**：保存模型请求、预测、控制指令、仿真状态、费用与轨迹媒体。
 
 ## 快速开始
@@ -111,7 +113,14 @@ jev-libero validate-task my-task.json
 jev-libero run --provider typesafe --task my-task.json --out runs/custom
 ```
 
-[`microwave.json`](src/jev_libero/tasks/microwave.json) 和 [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json) 展示了如何将 LIBERO 对象、关节与进展指标、决策条件关联起来。当前引擎提供单目标的 Panda/OSC 控制接口；可用测量、表达式和扩展方式见 [配置指南](docs/tasks.md)。
+[`microwave.json`](src/jev_libero/tasks/microwave.json)、[`top_drawer.json`](src/jev_libero/tasks/top_drawer.json) 和 [`alphabet_soup.json`](src/jev_libero/tasks/alphabet_soup.json) 使用同一测量接口。`measurements` 选择计算项，`features` 选择输出字段，`policy` 选择各层 Jev 接收的内容，`record_features` 选择逐步记录的字段，无需任务专用执行分支。详见 [配置指南](docs/tasks.md)。
+
+运行抓取任务：
+
+```bash
+jev-libero run --provider typesafe --task alphabet_soup --seed 1 \
+  --out runs/soup-s1 --max-decisions 60 --budget-usd 0.03
+```
 
 ## 工作方式
 
@@ -125,14 +134,15 @@ Jev 从候选中选择动作。需要先调整位置时，两步前视会寻找�
 
 ## 已记录结果
 
-每个内置任务展示一个成功案例：
+每个内置任务展示一个通过 LIBERO 原始判定的记录：
 
 |任务|种子|结果|原子决策|环境步|API 费用|
 |---|---:|---|---:|---:|---:|
 |微波炉|1|成功|14|111|$0.001249|
 |顶层抽屉|1|成功|20|155|$0.001418|
+|Alphabet soup|1|容纳判定通过；仍夹持|40|314|约 $0.003023|
 
-两例使用初态索引 0 和 OpenRouter，表中费用为模型调用费用。[运行记录与分析 →](docs/results.md)
+均使用初态索引 0。微波炉与抽屉使用 OpenRouter；抓取使用 TypeSafe，费用按输入 token 单价估算。表中仅计模型调用费用。[运行记录与分析 →](docs/results.md)
 
 ### 回放已有轨迹
 

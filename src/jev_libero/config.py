@@ -30,7 +30,7 @@ BINARY = {
     "lt": operator.lt,
     "eq": operator.eq,
 }
-OPS = set(BINARY) | {"ref", "all", "any", "not", "norm", "round", "index"}
+OPS = set(BINARY) | {"ref", "all", "any", "not", "norm", "round", "index", "count"}
 
 
 def expression(node, context):
@@ -54,6 +54,8 @@ def expression(node, context):
         return not expression(args, context)
     if op == "norm":
         return float(np.linalg.norm(expression(args, context)))
+    if op == "count":
+        return len(expression(args, context))
     values = expression(args, context)
     if op in BINARY:
         if op in ("add", "sub", "mul", "div") and any(isinstance(v, list) for v in values):
@@ -102,6 +104,19 @@ def load_task(path=None):
     ):
         if key not in cfg:
             raise ValueError(f"Missing task configuration section: {key}")
+    if "grasp_measurements" in cfg["binding"]:
+        raise ValueError("Use declarative measurements instead of binding.grasp_measurements")
+    if "measurements" in cfg:
+        from .measurements import references, validate_measurements
+
+        validate_measurements(cfg["measurements"])
+        for reference in references(cfg["features"]):
+            if reference.startswith("raw.") and reference.split(".")[1] not in cfg["measurements"]:
+                raise ValueError(f"Undeclared measurement in features: {reference}")
+    if not isinstance(cfg.get("record_features", []), list) or any(
+        not isinstance(name, str) for name in cfg.get("record_features", [])
+    ):
+        raise ValueError("record_features must be a list of feature names")
     expressions = [
         *cfg["features"].values(),
         *cfg["predictions"].values(),
