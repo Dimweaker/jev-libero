@@ -2,7 +2,7 @@
 
 <img src="docs/media/banner.svg" alt="Jev × LIBERO" width="960" />
 
-**Jev 分层选择原子动作，物理前视提供可验证的候选。**
+**用 Jev、物理前视和可配置任务探索机器人控制。**
 
 [English](README.md) · [任务配置](docs/tasks.md) · [结果与复现](docs/results.md) · [MIT](LICENSE)
 
@@ -12,97 +12,135 @@
 
 <table>
 <tr><th>关闭微波炉</th><th>关闭顶层抽屉</th></tr>
-<tr><td><a href="docs/media/microwave.mp4"><img src="docs/media/microwave.gif" width="360" alt="微波炉实际仿真轨迹" /></a></td><td><a href="docs/media/top-drawer.mp4"><img src="docs/media/top-drawer.gif" width="360" alt="抽屉实际仿真轨迹" /></a></td></tr>
+<tr><td><a href="docs/media/microwave.mp4"><img src="docs/media/microwave.gif" width="360" alt="微波炉仿真轨迹" /></a></td><td><a href="docs/media/top-drawer.mp4"><img src="docs/media/top-drawer.gif" width="360" alt="抽屉仿真轨迹" /></a></td></tr>
 <tr><td>14 次原子决策 · 111 环境步</td><td>20 次原子决策 · 155 环境步</td></tr>
 </table>
 
-两条轨迹均通过 LIBERO 原始成功判定。动画播放的是**仿真时间**，不包含推理与物理前视等待，不代表实时控制。抽屉任务只更换了 JSON 配置，没有手写关抽屉技能。
+两个 LIBERO 任务共用同一控制引擎，各自加载 JSON 任务配置。视频按仿真时间播放，省略决策和物理前视的等待。
 
-## 核心设计
+## 功能
 
-- **27 个原子输入**：世界坐标平移、旋转、开爪、合爪和保持。
-- **真正串行的分层选择**：意图 → 接触/运动方式 → 一个原子输入；下层接收上层的选择。
-- **可逆物理前视**：保存完整物理与控制器快照，模拟候选输入，再恢复原状态。
-- **任务配置化**：对象、进展公式、接触规则、局部目标、提示、信息投影和评价条件均由 JSON 加载。
-- **可检查的证据**：提供请求、响应、费用、预测、实际控制、状态数组，也保留失败记录。
-
-物理计算和筛选由代码、FCL 与 MuJoCo 完成，Jev 在可行候选中选择。不能把求解器的计算全部归功于 Jev。两步前视只提供后续可行输入的见证，**不会自动执行两步序列**。
+- **精细控制**：27 个输入，涵盖平移、旋转、开爪、合爪和保持。
+- **分层决策**：Jev 依次选择意图、接触/运动方式和具体输入，每层选择传递给下一层。
+- **物理前视**：在可恢复的仿真分支中预测候选动作的效果。
+- **任务配置**：通过 JSON 定义对象、进展指标、接触规则、目标和决策提示。
+- **运行记录**：保存模型请求、预测、控制指令、仿真状态、费用与轨迹媒体。
 
 ## 快速开始
 
-推荐 Linux x86-64、Python 3.10。
+### 1 · 安装
+
+使用 Python 3.10 或 3.11，按自己的习惯准备环境：
 
 ```bash
 git clone https://github.com/Dimweaker/jev-libero.git
 cd jev-libero
-python3.10 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
 pip install -e .
 
-# 不需要 API Key 或仿真器即可查看记录
 jev-libero tasks
 jev-libero inspect examples/records/top_drawer_seed1
 ```
 
-安装仿真依赖和固定版本 LIBERO：
+核心包可以浏览任务和已有记录。运行机器人任务时，再接入 LIBERO。
+
+### 2 · 接入 LIBERO
+
+如果已有兼容的 LIBERO / robosuite / MuJoCo 环境，可以沿用现有仿真依赖，补充几何库并指定 LIBERO 路径：
+
+```bash
+pip install python-fcl scipy
+export LIBERO_ROOT=/path/to/LIBERO
+export MUJOCO_GL=egl
+```
+
+<details>
+<summary>从零安装？可以参考演示使用的环境</summary>
 
 ```bash
 pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cpu
 pip install -e '.[robot]'
+
 git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git ../LIBERO
 git -C ../LIBERO checkout 8f1084e3132a39270c3a13ebe37270a43ece2a01
 export LIBERO_ROOT="$(cd ../LIBERO && pwd)"
 export MUJOCO_GL=egl
-
-# 独立回放保存的控制指令，不调用模型
-jev-libero replay examples/records/top_drawer_seed1
 ```
 
-无需下载示范数据集，也不修改 LIBERO 源码或 `~/.libero`。渲染需要可用的 EGL；更多依赖说明见 [安装文档](docs/setup.md)。
+这套依赖对应仓库中的演示记录。CPU 版 PyTorch 即可；任务定义、场景资源和初态由 LIBERO 提供。
 
-运行新的付费模型闭环：
+</details>
 
-```bash
-export OPENROUTER_API_KEY_FILE=/path/to/private/openrouter.key
-# 也可设置 OPENROUTER_API_KEY 环境变量，不要把密钥提交到 Git。
+离屏渲染使用 EGL；添加 `--no-render` 可以只保存控制与状态。其他依赖和渲染选项见 [安装文档](docs/setup.md)。
 
-jev-libero run --task microwave --seed 1 --init-state 0 \
-  --out runs/microwave-s1 --max-decisions 100 --budget-usd 0.10
+### 3 · 选择 API 并运行
 
-jev-libero run --task top_drawer --seed 1 --init-state 0 \
-  --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
-```
-
-默认使用 OpenRouter，也可以直接使用 [TypeSafe 官方 API](https://docs.typesafe.ai/introduction/quickstart)（[申请密钥](https://console.typesafe.ai/settings/keys)）：
+**TypeSafe 官方 API**：[获取密钥](https://console.typesafe.ai/settings/keys) · [官方文档](https://docs.typesafe.ai/introduction/quickstart)
 
 ```bash
 export TYPESAFE_API_KEY_FILE=/path/to/private/typesafe.key
-# 也可设置 TYPESAFE_API_KEY。
+# 也可设置环境变量 TYPESAFE_API_KEY。
+
 jev-libero run --provider typesafe --task top_drawer --seed 1 \
-  --out runs/drawer-official --max-decisions 100 --budget-usd 0.10
+  --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
 ```
 
-官方入口为 `https://api.typesafe.ai/v1/systemone`，模型名为 `jev-latest`。仅调用适配不同，状态、问题、策略和仿真不变。官方响应只提供 token 用量，因此按公布的每百万输入 token **$0.042**、输出免费估算费用，并单独记录于 `cost_estimates.jsonl`；OpenRouter 继续使用返回的实际费用。
+**OpenRouter**：[获取密钥](https://openrouter.ai/)
 
-费用保护不是服务商侧的硬账单上限。输出目录必须是新目录。`--no-render` 可禁用图像输出，但仍保存控制与状态。
+```bash
+export OPENROUTER_API_KEY_FILE=/path/to/private/openrouter.key
+# 也可设置环境变量 OPENROUTER_API_KEY。
+
+jev-libero run --provider openrouter --task microwave --seed 1 \
+  --out runs/microwave-s1 --max-decisions 100 --budget-usd 0.10
+```
+
+两种入口共用控制流程。官方 API 使用 `/v1/systemone` 和 `jev-latest`；OpenRouter 使用 `typesafe/jev-1.13`，也是 CLI 的默认入口。
+
+每轮使用新的输出目录。`--max-decisions` 限制决策次数，`--budget-usd` 设置客户端费用保护。运行会调用付费 API：OpenRouter 返回费用，TypeSafe 按 token 用量估算费用。[接入与计费说明 →](docs/setup.md#official-api)
+
+## 配置自己的任务
+
+可以从内置任务开始修改，也可以直接传入自己的 JSON：
+
+```bash
+cp src/jev_libero/tasks/top_drawer.json my-task.json
+# 修改任务绑定、目标、测量指标和提示。
+jev-libero validate-task my-task.json
+jev-libero run --provider typesafe --task my-task.json --out runs/custom
+```
+
+[`microwave.json`](src/jev_libero/tasks/microwave.json) 和 [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json) 展示了如何将 LIBERO 对象、关节与进展指标、决策条件关联起来。当前引擎提供单目标的 Panda/OSC 控制接口；可用测量、表达式和扩展方式见 [配置指南](docs/tasks.md)。
+
+## 工作方式
+
+**读取仿真状态 → 物理前视 → 按任务条件筛选 → Jev 分层选择 → 执行并观察**
+
+每个候选输入最多前视 **8 个环境步，即 0.4 秒仿真时间**。MuJoCo 计算动力学，FCL 测量碰撞形状间的距离，任务配置定义期望效果。
+
+Jev 从候选中选择动作。需要先调整位置时，两步前视会寻找通向目标效果的局部路径；控制器执行一个选中的输入，观察新状态，再作下一次选择。
+
+[架构与实现细节 →](docs/architecture.md)
 
 ## 已记录结果
 
-|任务|种子|结果|原子决策|环境步|
-|---|---:|---|---:|---:|
-|微波炉|1|成功|14|111|
-|顶层抽屉|1|成功|20|155|
+每个内置任务展示一个成功案例：
 
-每个任务展示一个成功案例，均使用初态索引 0，**不代表成功率评估**。两例原运行使用 OpenRouter。
+|任务|种子|结果|原子决策|环境步|API 费用|
+|---|---:|---|---:|---:|---:|
+|微波炉|1|成功|14|111|$0.001249|
+|顶层抽屉|1|成功|20|155|$0.001418|
 
-软件整理时，已对全部 **311 次历史请求与选择** 做过等价性检查；控制轨迹可在固定仿真栈中逐步回放验证。
+两例使用初态索引 0 和 OpenRouter，表中费用为模型调用费用。[运行记录与分析 →](docs/results.md)
 
-## 当前边界
+### 回放已有轨迹
 
-使用完整仿真状态，不是纯视觉策略，不适用于直接部署到真实机器人。只支持单个活动目标；一般抓放、多物体长流程、开关等模型状态变更尚未实现。接触筛选也不是连续时间或全机械臂安全保证。
+如果想查看已有轨迹，可以使用上面的参考环境运行：
 
-仿真会在前视和 API 调用期间暂停。抽屉演示为 7.75 秒仿真时间，原运行壁钟约 131 秒。
+```bash
+jev-libero replay examples/records/top_drawer_seed1
+```
+
+回放会执行保存的控制指令，检查状态和任务结果，无需调用 API。[环境参考](docs/setup.md#tested-simulation-stack) 列出了生成这些记录时使用的版本。
 
 ## 开发
 
@@ -111,9 +149,11 @@ pip install -e '.[dev]'
 ruff check src tests tools
 ruff format --check src tests tools
 pytest
-pytest --simulation  # 需 robot 依赖与 LIBERO_ROOT，不调用付费 API
+pytest --simulation  # 配置 LIBERO 后可选的物理检查
 ```
 
-想报告问题或提交代码改进？[贡献指南](CONTRIBUTING.md) 说明了如何提 Issue、修改代码并提交 PR；普通使用者无需执行这些步骤。
+测试使用模拟或已记录的 API 响应。仿真测试覆盖控制回放、几何测量、快照恢复和两步前视。
 
-另见 [任务配置](docs/tasks.md) 和 [第三方致谢](THIRD_PARTY.md)。
+想报告问题或提交代码改进？查看 [贡献指南](CONTRIBUTING.md)。
+
+[第三方致谢](THIRD_PARTY.md) · [MIT License](LICENSE)

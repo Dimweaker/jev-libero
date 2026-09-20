@@ -2,14 +2,13 @@
 
 <img src="docs/media/banner.svg" alt="Jev × LIBERO — fine-grained decisions, physics-grounded control" width="960" />
 
-**A small, inspectable robot-control stack: Jev selects. Physics previews ground the choices.**
+**Explore robot control with Jev, local physics previews, and configurable tasks.**
 
 [![Tests](https://github.com/Dimweaker/jev-libero/actions/workflows/tests.yml/badge.svg)](https://github.com/Dimweaker/jev-libero/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-70c8a4.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-research%20prototype-ecb95f)](#scope--limitations)
 
-[Demos](#demos) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Results](#recorded-results) · [Task configs](docs/tasks.md) · [简体中文](README.zh-CN.md)
+[Demos](#demos) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Results](#recorded-results) · [Task configs](#configure-your-own-task) · [简体中文](README.zh-CN.md)
 
 </div>
 
@@ -24,40 +23,47 @@
 <tr><td align="center">14 decisions · 111 environment steps<br/><a href="docs/media/microwave.mp4">MP4</a> · <a href="examples/records/microwave_seed1">Full record</a></td><td align="center">20 decisions · 155 environment steps<br/><a href="docs/media/top-drawer.mp4">MP4</a> · <a href="examples/records/top_drawer_seed1">Full record</a></td></tr>
 </table>
 
-These are **recorded simulation trajectories**, not animation generated from a plan. Both satisfy LIBERO's original success predicates. Media plays in **simulation time**, excluding inference and physics-preview waiting; this is not a real-time controller. The drawer demo uses the same engine with a different JSON task configuration—not a hand-written drawer skill.
+Two LIBERO tasks, one control engine. Each demo loads its own JSON task definition. Videos follow simulation time, with decision and physics-preview waiting omitted.
 
-## Why this project?
+## Features
 
-- **Atomic control, not task macros.** 27 inputs: Cartesian translations, wrist rotations, open, close, and hold.
-- **Real conditional decisions.** Jev chooses an intent, then a contact/motion family, then one input. Later decisions receive earlier choices.
-- **Physics-grounded candidates.** Reversible simulator branches measure actual short-term effects. Independent collision-shape distance queries avoid misleading proximity features.
-- **Tasks are data.** Object bindings, progress formulas, contact rules, local-goal conditions, prompts, and preview scoring live in JSON.
-- **Evidence included.** Compressed requests, responses, predictions, controls, simulator states, and costs—not just GIFs.
+- **Fine-grained control.** 27 inputs covering Cartesian translations, wrist rotations, gripper open/close, and hold.
+- **Layered decisions.** Jev selects an intent, a contact/motion family, and an input, with each choice informing the next.
+- **Local physics previews.** Reversible simulator branches evaluate candidate effects before execution.
+- **Configurable tasks.** Define objects, progress measures, contact rules, goals, and decision prompts in JSON.
+- **Inspectable runs.** Save model requests, predictions, controls, simulator states, costs, and trajectory media together.
 
 ## Quick start
 
-### 1 · Install the core
+### 1 · Install
+
+Use Python 3.10 or 3.11 in your preferred environment:
 
 ```bash
 git clone https://github.com/Dimweaker/jev-libero.git
 cd jev-libero
-python3.10 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
 pip install -e .
 
 jev-libero tasks
 jev-libero inspect examples/records/top_drawer_seed1
 ```
 
-Inspection needs **no API key, LIBERO installation, or simulator**.
+The core package lets you browse tasks and recorded results. To run episodes, connect a LIBERO environment next.
 
-### 2 · Add the simulator
+### 2 · Connect LIBERO
 
-The tested platform is Linux x86-64 / Python 3.10. Keep the pinned robot stack for recorded-state replay.
+Already have a compatible LIBERO / robosuite / MuJoCo environment? Keep your simulator dependencies, add the geometry libraries, and point the package to your checkout:
 
 ```bash
-# CPU PyTorch is sufficient; install it first to avoid unnecessary CUDA wheels.
+pip install python-fcl scipy
+export LIBERO_ROOT=/path/to/LIBERO
+export MUJOCO_GL=egl
+```
+
+<details>
+<summary>Starting fresh? Use the demo environment as a reference</summary>
+
+```bash
 pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cpu
 pip install -e '.[robot]'
 
@@ -67,99 +73,90 @@ export LIBERO_ROOT="$(cd ../LIBERO && pwd)"
 export MUJOCO_GL=egl
 ```
 
-A working EGL setup is needed for off-screen rendering. `--no-render` disables camera output for new runs. See [setup and troubleshooting](docs/setup.md) for CPU-only rendering and dependency details. **Demonstration datasets are not required** for these simulation tasks; the checkout supplies task definitions, assets, and initial states. No edits to LIBERO or `~/.libero` are needed.
+This installs the simulator versions used for the included recordings. CPU PyTorch is sufficient; LIBERO supplies the task definitions, assets, and initial states.
 
-### 3 · Replay first—no model calls
+</details>
 
-```bash
-jev-libero replay examples/records/top_drawer_seed1
-```
+Use EGL for off-screen rendering, or add `--no-render` to save controls and states without camera output. See [setup](docs/setup.md) for dependency and renderer options.
 
-This replays the recorded low-level controls and checks state agreement and task outcome. It is **not** a new Jev rollout.
+### 3 · Choose an API and run
 
-### 4 · Run a new Jev episode
-
-Provide an [OpenRouter](https://openrouter.ai/) key with access to `typesafe/jev-1.13` and the Decisions API. For example, use an existing private key file:
-
-```bash
-export OPENROUTER_API_KEY_FILE=/path/to/private/openrouter.key
-# Alternatively, set OPENROUTER_API_KEY in your environment.
-
-jev-libero run --task microwave --seed 1 --init-state 0 \
-  --out runs/microwave-s1 --max-decisions 100 --budget-usd 0.10
-
-jev-libero run --task top_drawer --seed 1 --init-state 0 \
-  --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
-```
-
-#### Official TypeSafe API
-
-Use the [official API](https://docs.typesafe.ai/introduction/quickstart) directly; get a key in the [TypeSafe console](https://console.typesafe.ai/settings/keys):
+**Official TypeSafe API** — [get a key](https://console.typesafe.ai/settings/keys) · [API docs](https://docs.typesafe.ai/introduction/quickstart)
 
 ```bash
 export TYPESAFE_API_KEY_FILE=/path/to/private/typesafe.key
-# Alternatively, export TYPESAFE_API_KEY.
+# Or set TYPESAFE_API_KEY in your environment.
+
 jev-libero run --provider typesafe --task top_drawer --seed 1 \
-  --out runs/drawer-official --max-decisions 100 --budget-usd 0.10
+  --out runs/drawer-s1 --max-decisions 100 --budget-usd 0.10
 ```
 
-This uses `https://api.typesafe.ai/v1/systemone` with `jev-latest`. The state, questions, policy, and simulator are unchanged. OpenRouter remains the default. Official responses report tokens rather than dollar costs, so the budget guard estimates spend at the published **$0.042/million input tokens** (output free), recorded separately in `cost_estimates.jsonl`.
+**OpenRouter** — [get a key](https://openrouter.ai/)
 
-`run` makes **paid API calls**. The cost guard uses reported OpenRouter costs or estimated TypeSafe costs; it is not a provider-enforced billing cap. Output directories must be new. Never commit credentials or blindly publish local run folders.
+```bash
+export OPENROUTER_API_KEY_FILE=/path/to/private/openrouter.key
+# Or set OPENROUTER_API_KEY in your environment.
+
+jev-libero run --provider openrouter --task microwave --seed 1 \
+  --out runs/microwave-s1 --max-decisions 100 --budget-usd 0.10
+```
+
+Both routes use the same control pipeline. TypeSafe calls `/v1/systemone` with `jev-latest`; OpenRouter uses `typesafe/jev-1.13` and is the CLI default.
+
+Choose a new output directory for each episode. `--max-decisions` bounds its length, and `--budget-usd` sets a client-side spending guard. Runs use paid API calls: OpenRouter reports costs directly; TypeSafe costs are estimated from token usage. [API setup and billing details →](docs/setup.md#official-api)
+
+## Configure your own task
+
+Use the bundled tasks as starting points, or pass your own JSON file:
+
+```bash
+cp src/jev_libero/tasks/top_drawer.json my-task.json
+# Edit the task binding, goals, measurements, and prompts.
+jev-libero validate-task my-task.json
+jev-libero run --provider typesafe --task my-task.json --out runs/custom
+```
+
+[`microwave.json`](src/jev_libero/tasks/microwave.json) and [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json) show how to connect LIBERO objects and joints to progress measures and decision criteria. The current engine provides a single-target Panda/OSC interface; the [configuration guide](docs/tasks.md) covers available measurements, expressions, and extension points.
 
 ## How it works
 
 ```mermaid
 flowchart LR
     S[Simulator state] --> P[Reversible physics previews]
-    P --> C[Configured effect contracts]
+    P --> C[Task effect criteria]
     C --> I[Jev: intent]
     I --> F[Jev: contact / motion family]
     F --> A[Jev: one atomic input]
-    A --> E[Execute and verify]
+    A --> E[Execute and observe]
     E --> S
 ```
 
-Each input is previewed for up to **8 environment steps / 0.4 simulation seconds** from a complete physics/controller snapshot. The code filters candidates by predicted effects and configured contact constraints.
+The engine reads simulator state and previews each input for up to **8 environment steps / 0.4 simulation seconds**. MuJoCo supplies the dynamics, FCL measures collision-shape distances, and the task configuration determines which effects qualify.
 
-When no one-step candidate qualifies, the default two-step mode searches for a local repositioning witness. **Only the first input can execute.** The next input is chosen again after observing the new state; a witness is never an automatically executed skill.
+Jev chooses among those candidates. If a useful move needs repositioning first, two-step previews look for a route to the desired effect. The controller executes one selected input, observes the result, and chooses again.
 
-| Responsibility | Owner |
-|---|---|
-| Collision geometry, physical rollouts, candidate eligibility | Code + FCL + MuJoCo |
-| Intent, contact/motion family, executed primitive selection | Jev, within the offered candidates |
-| Cartesian feedback, state restoration, original task-success check | Code + LIBERO / robosuite |
-
-This is a **hybrid model-based control prototype**, not a claim that Jev independently discovers the physics or plans an entire manipulation task. Singleton candidate sets also occur and do not demonstrate meaningful choice.
+[Architecture and implementation details →](docs/architecture.md)
 
 ## Recorded results
 
-| Task | Seed | Outcome | Decisions | Env steps | Recorded API cost |
+One successful example from each bundled task:
+
+| Task | Seed | Outcome | Decisions | Env steps | API cost |
 |---|---:|:---:|---:|---:|---:|
 | Microwave | 1 | ✅ | 14 | 111 | $0.001249 |
 | Top drawer | 1 | ✅ | 20 | 155 | $0.001418 |
 
-One successful example per task, both using saved initial-state index **0**. These are demonstrations, **not success-rate estimates**. Recorded API costs are from OpenRouter and exclude computation.
+Both use saved initial-state index 0 and OpenRouter. Costs cover model calls. [Run records and analysis →](docs/results.md)
 
-The published controls reproduce their recorded states and outcomes in the tested stack. Packaging regression tests also preserve **all 311 recorded model requests and choices**. See [results and reproducibility](docs/results.md).
+### Replay a recording
 
-## Task configurations
+To inspect an existing trajectory, use the reference environment above and run:
 
 ```bash
-jev-libero validate-task top_drawer
-jev-libero run --task path/to/my-task.json --out runs/custom --seed 1
+jev-libero replay examples/records/top_drawer_seed1
 ```
 
-Start from [`microwave.json`](src/jev_libero/tasks/microwave.json) or [`top_drawer.json`](src/jev_libero/tasks/top_drawer.json). A task configuration specifies *what effects count*, not a predetermined action sequence. Formulas use a small declarative expression language—no `eval` or embedded Python. [Configuration guide →](docs/tasks.md)
-
-## Scope & limitations
-
-- Uses **privileged simulator state** and an exact local simulator, not image-only perception or a learned world model.
-- Not validated on physical robots; sampled gripper-contact checks are **not** continuous-time or whole-arm safety guarantees.
-- One active target and a short preview horizon. General pick-and-place, multi-object planning, and switch/light state mutation are not implemented.
-- Accurate state prediction does not prove every derived feature or task contract is correct. Geometry regressions are tested separately.
-- Simulation pauses during decisions. Physics previews dominate latency; the drawer episode took about **131 seconds wall time** for **7.75 seconds simulated motion**.
-- The live API and third-party simulator interfaces can evolve. The recorded examples remain useful without API access.
+Replay applies the saved controls and checks the resulting states and task outcome, without API calls. The [environment reference](docs/setup.md#tested-simulation-stack) lists the versions used to create these recordings.
 
 ## Development
 
@@ -167,22 +164,22 @@ Start from [`microwave.json`](src/jev_libero/tasks/microwave.json) or [`top_draw
 pip install -e '.[dev]'
 ruff check src tests tools
 ruff format --check src tests tools
-pytest                          # core tests, no simulator or API
-pytest --simulation             # optional offline physics tests; requires robot extra + LIBERO_ROOT
+pytest
+pytest --simulation  # optional physics checks with LIBERO configured
 ```
 
-No test makes an OpenRouter call. The optional suite includes full control replay, false-zero-distance regressions, snapshot restoration, two-step witness checks, and the new runner driven by recorded responses.
+Tests use mock or recorded API responses. The simulation suite covers control replay, geometry, snapshot restoration, and two-step previews.
 
 ```text
-src/jev_libero/      # client, policy, world, geometry, recorder/CLI
-  tasks/            # declarative task definitions
-examples/records/   # compact, auditable outcomes and trajectories
-tests/              # CPU tests + optional simulation regression
-docs/               # setup, configuration, results, demo media
+src/jev_libero/      # API client, policy, simulator, and CLI
+  tasks/            # bundled task definitions
+examples/records/   # recorded episodes
+tests/              # core and simulation tests
+docs/               # guides and demo media
 ```
 
 Want to report a bug or improve the code? See [how to contribute](CONTRIBUTING.md).
 
 [Third-party acknowledgements](THIRD_PARTY.md) · [MIT License](LICENSE)
 
-Built on [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO), [robosuite](https://github.com/ARISE-Initiative/robosuite), [MuJoCo](https://github.com/google-deepmind/mujoco), [python-fcl](https://github.com/BerkeleyAutomation/python-fcl), and [TypeSafe Jev](https://typesafe.ai) ([also on OpenRouter](https://openrouter.ai/typesafe/jev-1.13)). Physics-grounded decision interfaces were inspired in part by [Typesafe Mario](https://github.com/fhshaik/typesafe-mario).
+Built on [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO), [robosuite](https://github.com/ARISE-Initiative/robosuite), [MuJoCo](https://github.com/google-deepmind/mujoco), [python-fcl](https://github.com/BerkeleyAutomation/python-fcl), and [TypeSafe Jev](https://typesafe.ai). Decision-interface inspiration: [Typesafe Mario](https://github.com/fhshaik/typesafe-mario).
