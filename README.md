@@ -29,6 +29,8 @@
 
 Three LIBERO task configurations share one control engine. Videos follow simulation time, with decision and physics-preview waiting omitted.
 
+[**Explore the interactive replay — follow Jev’s choices and probabilities alongside each video ↗**](https://dimweaker.github.io/jev-libero/)
+
 ## Features
 
 - **Fine-grained control.** 27 inputs covering Cartesian translations, wrist rotations, gripper open/close, and hold.
